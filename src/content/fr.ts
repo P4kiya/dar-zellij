@@ -1,0 +1,283 @@
+// French copy. Wherever possible it reuses the owner's own wording from the current
+// marrakech-riads.com page and the 2024 menu; the rest is plain fact.
+// In strings: *text* is set in italics, ^e^ is a superscript (XVII^e^ siècle).
+
+export const fr = {
+  meta: {
+    title:
+      'Dar Zellij · Restaurant marocain dans un riad du XVIIe siècle, Marrakech',
+    description:
+      'Restaurant gastronomique marocain dans un riad du XVIIe siècle de la médina de Marrakech : plafonds peints, carte et menus, terrasse, soirées et réservation.',
+  },
+  a11y: {
+    skip: 'Aller au contenu',
+    home: 'Dar Zellij, haut de page',
+    primaryNav: 'Navigation principale',
+    language: 'Langue',
+    openMenu: 'Ouvrir le menu',
+    closeMenu: 'Fermer le menu',
+    newTab: '(nouvel onglet)',
+  },
+  nav: {
+    links: [
+      { id: 'riad', label: 'Le riad' },
+      { id: 'ritual', label: 'Le rituel' },
+      { id: 'menu', label: 'La carte' },
+      { id: 'rooftop', label: 'La terrasse' },
+      { id: 'week', label: 'Horaires' },
+    ],
+    book: 'Réserver',
+    menu: 'Menu',
+    close: 'Fermer',
+  },
+  status: {
+    open: 'Ouvert · jusqu’à minuit',
+    later: 'Ouvre aujourd’hui à 12h',
+    closed: 'Fermé le mardi · réouverture mercredi à 12h',
+    dancer: 'Ce soir : danseuse orientale',
+    brunch: 'Brunch dès 11h, sur demande',
+  },
+  preloader: { est: 'Est. 1999', city: 'Marrakech' },
+  hero: {
+    eyebrow: 'Restaurant · Médina de Marrakech',
+    title: 'Dar *Zellij*',
+    note: 'Un riad du XVII^e^ siècle aux plafonds peints d’une rare beauté.',
+    hours: 'Tous les jours sauf le mardi · 12h – minuit',
+    book: 'Réserver une table',
+    menu: 'Voir la carte',
+    scroll: 'Défiler',
+  },
+  intro: {
+    kicker: 'Depuis 1999',
+    statement:
+      'De toutes les maisons que Marrakech Riads a restaurées, Dar Zellij est *l’une des plus remarquables.*',
+    aside:
+      'Nous l’avons transformée en restaurant gastronomique afin de vous faire partager, au cours d’un séjour à Marrakech, toute la splendeur de la gastronomie marocaine.',
+    facts: [
+      {
+        value: 'XVII^e^',
+        label: 'siècle',
+        text: 'Un riad de la médina qui a conservé ses plafonds peints d’origine.',
+      },
+      {
+        value: '2016',
+        label: 'La Liste',
+        text: 'Nommé parmi les meilleurs restaurants du monde.',
+      },
+    ],
+  },
+  riad: {
+    kicker: 'Le riad',
+    title: 'Un riad du *XVII^e^ siècle*',
+    text: 'Dans ce superbe riad du XVII^e^ siècle, qui a conservé des plafonds peints d’une rare beauté, nous avons créé une ambiance unique, luxueuse et romantique, pour une parenthèse hors du temps…',
+    hint: 'Faites défiler',
+    roomsLabel: 'Les salles du riad',
+    rooms: [
+      {
+        photo: 'patio',
+        name: 'Le patio',
+        text: 'Colonnes, arbres et tables dressées au cœur de la maison.',
+      },
+      {
+        photo: 'painted-ceiling',
+        name: 'Les plafonds peints',
+        text: 'Les décors d’origine, d’une rare beauté.',
+      },
+      {
+        photo: 'salon-fireplace',
+        name: 'Les salons',
+        text: 'Une cheminée, des lustres et la lumière des bougies.',
+      },
+      {
+        photo: 'alcove-table',
+        name: 'Les alcôves',
+        text: 'Des tables dressées sous les arcs sculptés.',
+      },
+      {
+        photo: 'rooftop-view',
+        name: 'La terrasse',
+        text: 'Au-dessus des toits de la médina.',
+      },
+    ],
+  },
+  ritual: {
+    kicker: 'Le rituel',
+    photosLabel: 'Photos du rituel',
+    beats: [
+      {
+        text: 'Les théières se lèvent bien haut pour faire couler le breuvage brûlant dans les verres,',
+        photo: 'tea-pour',
+      },
+      {
+        text: 'les musiciens lancent quelques notes légères,',
+        photo: 'red-salon',
+      },
+      { text: 'la ronde des plats peut commencer…', photo: 'tagine-reveal' },
+    ],
+  },
+  menu: {
+    kicker: 'Laissez-vous tenter !',
+    title: 'La *carte*',
+    intro:
+      'Pastillas, tagines, couscous et plats signature : toute la splendeur de la gastronomie marocaine, à la carte ou en menu.',
+    signature: {
+      label: 'Plats signature',
+      text: 'Plats conviviaux marocains, dont le trid et le méchoui : d’anciennes recettes transmises de génération en génération, reflet de l’histoire et du patrimoine culinaire de notre pays.',
+      forTwo: 'Pour deux personnes',
+    },
+    tabs: {
+      starters: 'Entrées',
+      mains: 'Plats',
+      desserts: 'Desserts',
+      menus: 'Menus',
+      drinks: 'Cocktails',
+    },
+    tabsLabel: 'Sections de la carte',
+    courses: { starter: 'Entrée', main: 'Plat', dessert: 'Dessert' },
+    perPerson: 'par personne',
+    or: 'ou',
+    drinks: {
+      signature: 'Cocktails signature',
+      classics: 'Cocktails classiques',
+      mocktails: 'Mocktails & smoothies',
+      wine: 'Vins marocains, champagnes et digestifs : voir la carte des boissons.',
+    },
+    tagineNote:
+      'Tous nos tagines sont accompagnés de semoule ou de légumes de saison.',
+    currency: 'Prix en dirhams marocains (MAD).',
+    downloads: {
+      food: 'Carte complète',
+      drinks: 'Carte des boissons',
+      pdf: 'PDF',
+    },
+  },
+  rooftop: {
+    kicker: 'La terrasse',
+    title: 'Sur les *toits* de la médina',
+    text: 'La terrasse domine les toits de Marrakech. À la carte des boissons : cocktails signature au safran de Taliouine, à la figue ou à la datte, et vins du Maroc.',
+    cocktails: 'Cocktails signature',
+  },
+  week: {
+    kicker: 'Horaires',
+    title: 'La *semaine* à Dar Zellij',
+    text: 'Ouvert tous les jours sauf le mardi, de 12h à minuit.',
+    days: [
+      'Dimanche',
+      'Lundi',
+      'Mardi',
+      'Mercredi',
+      'Jeudi',
+      'Vendredi',
+      'Samedi',
+    ],
+    hours: '12h – 00h',
+    closed: 'Fermé',
+    dancer: 'Soirée danseuse orientale',
+    brunch: 'Brunch dès 11h, sur demande',
+    today: 'Aujourd’hui',
+  },
+  gallery: {
+    kicker: 'Galerie',
+    title: 'En *images*',
+    text: 'Le patio, les salons, la terrasse et la table.',
+    open: 'Agrandir',
+    close: 'Fermer',
+    prev: 'Photo précédente',
+    next: 'Photo suivante',
+    dialog: 'Galerie photo',
+  },
+  book: {
+    kicker: 'Réservation',
+    title: 'Réservez votre *table*',
+    text: 'Envoyez-nous votre demande : nous vous répondons pour confirmer votre table.',
+    details: {
+      address: 'Adresse',
+      phone: 'Téléphone',
+      email: 'Email',
+      instagram: 'Instagram',
+      hours: 'Horaires',
+      directions: 'Itinéraire',
+    },
+    hoursLines: [
+      'Tous les jours sauf le mardi, 12h – minuit',
+      'Brunch le dimanche dès 11h, sur demande',
+    ],
+    form: {
+      date: 'Date',
+      time: 'Heure',
+      guests: 'Personnes',
+      guestsMore: 'Plus de 12',
+      name: 'Nom',
+      email: 'Email',
+      phone: 'Téléphone',
+      message: 'Message',
+      optional: 'facultatif',
+      messageHint: 'Une occasion, une allergie, une préférence…',
+      submit: 'Envoyer la demande',
+      closedDay: 'Le restaurant est fermé le mardi : choisissez un autre jour.',
+      pastDate: 'Choisissez une date à partir d’aujourd’hui.',
+      required: 'Merci de remplir ce champ.',
+      invalidEmail: 'Adresse email invalide.',
+      choose: 'Choisir',
+      brunch: 'brunch',
+      success:
+        'Merci, {name}. Nous vous répondons à {email} pour confirmer votre table.',
+      summary: '{guests} · {date} à {time}',
+      guest: 'personne',
+      guestsPlural: 'personnes',
+      again: 'Nouvelle demande',
+    },
+  },
+  sisters: {
+    kicker: 'Marrakech Riads',
+    title: 'Nos autres *tables*',
+    text: 'Deux autres maisons Marrakech Riads, à Marrakech et à Fès.',
+    cta: 'Découvrir',
+    items: [
+      {
+        name: 'Restaurant Dar Cherifa',
+        city: 'Marrakech',
+        photo: 'dar-cherifa',
+        url: 'https://marrakech-riads.com/restaurant-dar-cherifa/',
+      },
+      {
+        name: 'Table d’Hôtes Dar Bensouda',
+        city: 'Fès',
+        photo: 'dar-bensouda',
+        url: 'https://marrakech-riads.com/table-dhotes-dar-bensouda/',
+      },
+    ],
+  },
+  closing: {
+    title: 'Laissez-vous *tenter*',
+    text: 'Une parenthèse hors du temps, au cœur de la médina de Marrakech.',
+    book: 'Réserver une table',
+    call: 'Appeler le restaurant',
+  },
+  footer: {
+    tagline: 'Restaurant marocain du XVII^e^ siècle',
+    est: 'Est. 1999 · Marrakech',
+    explore: 'Explorer',
+    find: 'Nous trouver',
+    hours: 'Horaires',
+    hoursLines: [
+      'Tous les jours sauf le mardi',
+      '12h – minuit',
+      'Brunch le dimanche dès 11h, sur demande',
+      'Danseuse orientale le jeudi et le dimanche',
+    ],
+    group: 'Une maison Marrakech Riads',
+    time: 'Marrakech',
+    top: 'Haut de page',
+    book: 'Réserver une table',
+  },
+  dock: {
+    label: 'Réserver ou appeler',
+    book: 'Réserver une table',
+    bookShort: 'Réserver',
+    call: 'Appeler',
+  },
+  cursor: { view: 'Voir' },
+};
+
+export type Dictionary = typeof fr;

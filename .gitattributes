@@ -1,0 +1,7 @@
+# LF everywhere (Prettier expects it), and never touch the binary assets.
+* text=auto eol=lf
+*.pdf binary
+*.webp binary
+*.jpg binary
+*.png binary
+*.ico binary

@@ -1,0 +1,7 @@
+.next
+.cache
+node_modules
+public
+package-lock.json
+src/lib/photos.json
+tsconfig.json
