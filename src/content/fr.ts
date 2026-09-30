@@ -232,6 +232,7 @@ export const fr = {
       closedLegend: 'Fermé le mardi',
       closedShort: 'fermé',
       closeCalendar: 'Fermer le calendrier',
+      closeList: 'Fermer la liste',
       brunch: 'brunch',
       success:
         'Merci, {name}. Nous vous répondons à {email} pour confirmer votre table.',

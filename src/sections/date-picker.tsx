@@ -1,20 +1,16 @@
 'use client';
 
 import {
-  useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
-  type FocusEvent,
   type KeyboardEvent,
-  type MouseEvent,
 } from 'react';
 import { ArrowLeft, ArrowRight, CalendarDays, X } from 'lucide-react';
 import type { Dictionary } from '@/content';
+import { useFieldPopover } from '@/hooks/use-field-popover';
 import type { Locale } from '@/lib/i18n';
-import { matches, MEDIA } from '@/lib/motion';
-import { lockScroll, scrollPageBy, unlockScroll } from '@/lib/scroll';
 
 type Strings = Pick<
   Dictionary['book']['form'],
@@ -121,17 +117,15 @@ export function DatePicker({
   describedBy,
   onChange,
 }: DatePickerProps) {
-  const [open, setOpen] = useState(false);
-  // The calendar is only built once it is first opened: its "today" is only known in the browser.
-  const [mounted, setMounted] = useState(false);
   // The day holding the keyboard focus (the one cell with tabindex 0); its month is the one shown.
   const [focused, setFocused] = useState('');
   const triggerRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const gridRef = useRef<HTMLTableElement>(null);
-  const modalRef = useRef(false); // opened as a sheet (phones)?
-  const lockedRef = useRef(false); // page scrolling held by the sheet?
-  const refocusRef = useRef(true); // give the focus back to the field when closing?
+  const { open, mounted, openPopover, close, dialogProps } = useFieldPopover(
+    triggerRef,
+    dialogRef,
+  );
   const pendingFocus = useRef(false); // move the focus to `focused` after this render (keyboard moves)
 
   const locale = LOCALE[lang];
@@ -190,46 +184,10 @@ export function DatePicker({
     day >= today && weekdayOf(day) !== closedWeekday;
 
   const openCalendar = () => {
-    modalRef.current = matches(MEDIA.mobile);
     setFocused(value || today);
-    setMounted(true);
     pendingFocus.current = true;
-    setOpen(true);
+    openPopover();
   };
-
-  const close = useCallback((refocus: boolean) => {
-    refocusRef.current = refocus;
-    dialogRef.current?.close();
-  }, []);
-
-  // Shows the dialog once its content is rendered; the popover also closes on a click anywhere else
-  // (the sheet has its backdrop for that).
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog || !open) return;
-    if (!dialog.open) {
-      if (modalRef.current) {
-        dialog.showModal();
-        lockScroll();
-        lockedRef.current = true;
-      } else {
-        dialog.show();
-        // Bring the whole popover into view when the field sits low on the screen.
-        const below =
-          dialog.getBoundingClientRect().bottom + 24 - window.innerHeight;
-        if (below > 0) scrollPageBy(below);
-      }
-    }
-    if (modalRef.current) return;
-    const onPointerDown = (event: PointerEvent) => {
-      const target = event.target as Node;
-      if (!dialog.contains(target) && !triggerRef.current?.contains(target))
-        close(false);
-    };
-    document.addEventListener('pointerdown', onPointerDown, true);
-    return () =>
-      document.removeEventListener('pointerdown', onPointerDown, true);
-  }, [open, close]);
 
   // Keyboard moves land on their day once it is rendered (it may be in another month).
   useEffect(() => {
@@ -239,24 +197,6 @@ export function DatePicker({
       ?.querySelector<HTMLElement>('[tabindex="0"]')
       ?.focus({ preventScroll: true });
   });
-
-  // Let the page scroll again if the form goes away (it is sent) while the sheet is open.
-  useEffect(
-    () => () => {
-      if (lockedRef.current) unlockScroll();
-    },
-    [],
-  );
-
-  const onClose = () => {
-    setOpen(false);
-    if (lockedRef.current) {
-      unlockScroll();
-      lockedRef.current = false;
-    }
-    if (refocusRef.current) triggerRef.current?.focus({ preventScroll: true });
-    refocusRef.current = true;
-  };
 
   const select = (day: string) => {
     onChange(day);
@@ -303,33 +243,13 @@ export function DatePicker({
     move(to());
   };
 
-  const onDialogKeyDown = (event: KeyboardEvent<HTMLDialogElement>) => {
-    if (event.key !== 'Escape') return;
-    event.preventDefault();
-    event.stopPropagation();
-    close(true);
-  };
-
-  // Tabbing out of the popover closes it and lets the focus carry on to the next field.
-  const onDialogBlur = (event: FocusEvent<HTMLDialogElement>) => {
-    const dialog = event.currentTarget;
-    const to = event.relatedTarget as Node | null;
-    if (modalRef.current || !dialog.open || !to || dialog.contains(to)) return;
-    close(false);
-  };
-
-  // A tap on the sheet's backdrop closes it.
-  const onDialogClick = (event: MouseEvent<HTMLDialogElement>) => {
-    if (modalRef.current && event.target === event.currentTarget) close(true);
-  };
-
   return (
     <>
       <button
         ref={triggerRef}
         type="button"
         id={id}
-        className="date-trigger"
+        className="field-trigger"
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-controls={`${id}-cal`}
@@ -338,25 +258,21 @@ export function DatePicker({
         aria-describedby={describedBy}
         onClick={() => (open ? close(true) : openCalendar())}
       >
-        <span className="date-trigger__text">{shown || t.pickDate}</span>
+        <span className="field-trigger__text">{shown || t.pickDate}</span>
         <CalendarDays size={15} strokeWidth={1.5} aria-hidden="true" />
       </button>
       <label id={`${id}-label`} htmlFor={id}>
         {label}
       </label>
       <dialog
-        ref={dialogRef}
+        {...dialogProps}
         id={`${id}-cal`}
-        className="cal"
+        className="pop pop--cal"
         aria-label={t.pickDate}
-        onClose={onClose}
-        onKeyDown={onDialogKeyDown}
-        onBlur={onDialogBlur}
-        onClick={onDialogClick}
       >
         {mounted && (
           <>
-            <div className="cal-head">
+            <div className="pop-head">
               <p className="cal-month" id={`${id}-month`} aria-live="polite">
                 {monthLabel}
               </p>
@@ -381,7 +297,7 @@ export function DatePicker({
               </div>
               <button
                 type="button"
-                className="cal-close"
+                className="pop-close"
                 aria-label={t.closeCalendar}
                 onClick={() => close(true)}
               >
