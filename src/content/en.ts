@@ -227,6 +227,7 @@ export const en: Dictionary = {
       closedLegend: 'Closed on Tuesdays',
       closedShort: 'closed',
       closeCalendar: 'Close the calendar',
+      closeList: 'Close the list',
       brunch: 'brunch',
       success:
         'Thank you, {name}. We will reply to {email} to confirm your table.',

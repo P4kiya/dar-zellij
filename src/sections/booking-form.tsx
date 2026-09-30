@@ -19,6 +19,7 @@ import type { Locale } from '@/lib/i18n';
 import { EASE, matches, MEDIA } from '@/lib/motion';
 import { HOURS } from '@/lib/site';
 import { DatePicker } from './date-picker';
+import { Picker, type PickerOption } from './picker';
 
 type Strings = Dictionary['book']['form'];
 type Values = {
@@ -95,6 +96,22 @@ export function BookingForm({ t, lang }: { t: Strings; lang: Locale }) {
   useEffect(() => setToday(marrakechDateISO()), []);
 
   const slots = useMemo(() => timeSlots(values.date), [values.date]);
+  const timeOptions = useMemo<PickerOption[]>(
+    () =>
+      slots.map((slot) => ({
+        value: slot.value,
+        label: formatTime(slot.value, lang),
+        hint: slot.brunch ? t.brunch : undefined,
+      })),
+    [slots, lang, t.brunch],
+  );
+  const guestOptions = useMemo<PickerOption[]>(
+    () => [
+      ...GUESTS.map((n) => ({ value: n, label: n })),
+      { value: '13+', label: t.guestsMore },
+    ],
+    [t.guestsMore],
+  );
 
   const checkDate = (date: string) => {
     if (!date) return t.required;
@@ -220,43 +237,28 @@ export function BookingForm({ t, lang }: { t: Strings; lang: Locale }) {
             <div
               className={`field field--fixed ${errors.time ? 'has-error' : ''}`}
             >
-              <select
+              <Picker
                 id="bk-time"
-                name="time"
+                label={t.time}
                 value={values.time}
-                onChange={onChange}
-                required
-                aria-invalid={!!errors.time}
-                aria-describedby={describe('time')}
-              >
-                <option value="" disabled>
-                  {t.choose}
-                </option>
-                {slots.map((slot) => (
-                  <option key={slot.value} value={slot.value}>
-                    {formatTime(slot.value, lang)}
-                    {slot.brunch ? ` · ${t.brunch}` : ''}
-                  </option>
-                ))}
-              </select>
-              <label htmlFor="bk-time">{t.time}</label>
+                options={timeOptions}
+                placeholder={t.choose}
+                closeLabel={t.closeList}
+                invalid={!!errors.time}
+                describedBy={describe('time')}
+                onChange={(value) => setField('time', value)}
+              />
               {error('time')}
             </div>
             <div className="field field--fixed">
-              <select
+              <Picker
                 id="bk-guests"
-                name="guests"
+                label={t.guests}
                 value={values.guests}
-                onChange={onChange}
-              >
-                {GUESTS.map((n) => (
-                  <option key={n} value={n}>
-                    {n}
-                  </option>
-                ))}
-                <option value="13+">{t.guestsMore}</option>
-              </select>
-              <label htmlFor="bk-guests">{t.guests}</label>
+                options={guestOptions}
+                closeLabel={t.closeList}
+                onChange={(value) => setField('guests', value)}
+              />
             </div>
           </div>
           <div className="form-row">

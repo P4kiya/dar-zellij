@@ -2873,16 +2873,16 @@ html.has-preloader {
   color: var(--wine);
 }
 
+/* Full ink-soft rather than a faded label: at 75% opacity the hint fell under 4.5:1 on cream. */
 .field-optional {
+  color: var(--ink-soft);
   font-family: var(--sans);
   letter-spacing: 0.02em;
   text-transform: none;
-  opacity: 0.75;
 }
 
 .field input,
-.field textarea,
-.field select {
+.field textarea {
   width: 100%;
   height: 2.9rem;
   padding: 0.6rem 0 0.7rem;
@@ -2915,16 +2915,10 @@ html.has-preloader {
   color: rgba(43, 31, 26, 0.62);
 }
 
-.field select {
-  appearance: none;
-  padding-right: 1.6rem;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232b1f1a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")
-    no-repeat right 0.1rem center / 15px 15px;
-}
-
-/* The date field is a button that opens the calendar below it (date-picker.tsx): the browser's own
-   picker is blue, in the system font and in the visitor's date order, and looked foreign here. */
-.date-trigger {
+/* The date, time and guests fields are buttons opening a popover under them (date-picker.tsx,
+   picker.tsx): the browser's own date picker and select lists (blue, system font, the visitor's
+   date order) looked foreign here. */
+.field-trigger {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2942,7 +2936,7 @@ html.has-preloader {
   outline: 2px solid transparent;
 }
 
-.date-trigger__text {
+.field-trigger__text {
   flex: 1 1 auto;
   min-width: 0;
   overflow: hidden;
@@ -2950,33 +2944,36 @@ html.has-preloader {
   text-overflow: ellipsis;
 }
 
-.date-trigger > svg {
+.field-trigger > svg {
   flex: none;
   opacity: 0.6;
   transition:
     opacity 0.4s ease,
-    color 0.4s ease;
+    color 0.4s ease,
+    transform 0.4s var(--ease-soft);
 }
 
-.date-trigger:hover > svg,
-.date-trigger[aria-expanded='true'] > svg {
+.field-trigger:hover > svg,
+.field-trigger[aria-expanded='true'] > svg {
   color: var(--wine);
   opacity: 1;
 }
 
-/* The calendar: a popover under the field (a sheet at the foot of the screen on phones, see the
-   phone block). Drawn like the page: Cormorant for the month and the numbers, small capitals for
-   the days, the chosen day in wine, today with a dot, closed days in italics like the week grid. */
-.cal {
+.field-trigger--list[aria-expanded='true'] > svg {
+  transform: rotate(180deg);
+}
+
+/* The popover under a field (a sheet at the foot of the screen on phones, see the phone block): the
+   calendar, or the list of times or guests. */
+.pop {
   position: absolute;
   top: calc(1.15rem + 2.9rem + 0.75rem);
   right: auto;
   left: 0;
   z-index: 5;
-  width: 20.5rem;
   max-width: none;
   margin: 0;
-  padding: 1.1rem 1.1rem 0.85rem;
+  padding: 0;
   border: 1px solid var(--line);
   background: var(--cream);
   color: var(--ink);
@@ -2992,24 +2989,24 @@ html.has-preloader {
     overlay 0.4s allow-discrete;
 }
 
-.cal[open] {
+.pop[open] {
   opacity: 1;
   translate: 0 0;
 }
 
 @starting-style {
-  .cal[open] {
+  .pop[open] {
     opacity: 0;
     translate: 0 10px;
   }
 }
 
 /* Not clickable while it fades out. */
-.cal:not([open]) {
+.pop:not([open]) {
   pointer-events: none;
 }
 
-.cal-head {
+.pop-head {
   display: flex;
   align-items: center;
   gap: 0.6rem;
@@ -3029,7 +3026,7 @@ html.has-preloader {
 }
 
 .cal-arrow,
-.cal-close {
+.pop-close {
   flex: none;
   display: grid;
   place-items: center;
@@ -3048,8 +3045,8 @@ html.has-preloader {
 
 .cal-arrow:hover:not([aria-disabled='true']),
 .cal-arrow:focus-visible:not([aria-disabled='true']),
-.cal-close:hover,
-.cal-close:focus-visible {
+.pop-close:hover,
+.pop-close:focus-visible {
   border-color: var(--wine);
   background: var(--wine);
   color: var(--cream);
@@ -3060,8 +3057,15 @@ html.has-preloader {
   cursor: default;
 }
 
-.cal-close {
+.pop-close {
   display: none;
+}
+
+/* The calendar: Cormorant for the month and the numbers, small capitals for the days, the chosen
+   day in wine, today with a dot, closed days in italics like the week grid. */
+.pop--cal {
+  width: 20.5rem;
+  padding: 1.1rem 1.1rem 0.85rem;
 }
 
 .cal-grid {
@@ -3162,9 +3166,75 @@ html.has-preloader {
   color: var(--wine);
 }
 
+/* The time and guests lists: as wide as their field at least, the choice in wine, the highlighted
+   option (keyboard or pointer) in sand. Their head (title, close) only shows on the phone sheet. */
+.pop--list {
+  min-width: 100%;
+  width: max-content;
+  max-width: 22rem;
+  padding: 0.45rem 0;
+}
+
+.pop--list .pop-head {
+  display: none;
+}
+
+.pop-title {
+  flex: 1;
+  margin: 0;
+  font: 400 0.66rem/1.4 var(--caps);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.pick-list {
+  position: relative;
+  max-height: 17.5rem;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+  outline: none;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+.pick-option {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.55rem 1.1rem;
+  font: 400 1.15rem/1.2 var(--serif);
+  font-variant-numeric: lining-nums;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.pick-option.is-active {
+  background: var(--sand);
+}
+
+.pick-option[aria-selected='true'] {
+  background: var(--wine);
+  color: var(--cream);
+}
+
+.pick-option[aria-selected='true'].is-active {
+  background: var(--wine-dark);
+}
+
+.pick-option__hint {
+  font: 400 0.55rem/1 var(--caps);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
 .field.has-error input,
-.field.has-error select,
-.field.has-error .date-trigger {
+.field.has-error .field-trigger {
   border-bottom-color: var(--error);
 }
 
@@ -4300,9 +4370,9 @@ html.has-custom-cursor select * {
     grid-template-columns: 1fr;
   }
 
-  /* The calendar becomes a sheet at the foot of the screen (a modal dialog, in the top layer, so
-     no transformed ancestor can hold it). */
-  .cal {
+  /* The popovers become sheets at the foot of the screen (modal dialogs, in the top layer, so no
+     transformed ancestor can hold them). */
+  .pop {
     position: fixed;
     top: auto;
     right: 0;
@@ -4317,17 +4387,17 @@ html.has-custom-cursor select * {
     translate: 0 100%;
   }
 
-  .cal[open] {
+  .pop[open] {
     translate: 0 0;
   }
 
   @starting-style {
-    .cal[open] {
+    .pop[open] {
       translate: 0 100%;
     }
   }
 
-  .cal::backdrop {
+  .pop::backdrop {
     background: rgba(26, 19, 17, 0);
     transition:
       background-color 0.4s ease,
@@ -4335,19 +4405,20 @@ html.has-custom-cursor select * {
       overlay 0.4s allow-discrete;
   }
 
-  .cal[open]::backdrop {
+  .pop[open]::backdrop {
     background: rgba(26, 19, 17, 0.55);
   }
 
   @starting-style {
-    .cal[open]::backdrop {
+    .pop[open]::backdrop {
       background: rgba(26, 19, 17, 0);
     }
   }
 
   /* The sheet's content keeps a readable width on phones held sideways. */
-  .cal-head,
-  .cal-foot {
+  .pop-head,
+  .cal-foot,
+  .pick-list {
     max-width: 28rem;
     margin-inline: auto;
   }
@@ -4363,14 +4434,28 @@ html.has-custom-cursor select * {
     white-space: nowrap;
   }
 
-  .cal-close {
+  .pop-close {
     display: grid;
   }
 
   .cal-arrow,
-  .cal-close {
+  .pop-close {
     width: 44px;
     height: 44px;
+  }
+
+  .pop--list .pop-head {
+    display: flex;
+    margin-bottom: 0.5rem;
+  }
+
+  .pick-list {
+    max-height: min(55dvh, 22rem);
+  }
+
+  .pick-option {
+    padding: 0.8rem 0.6rem;
+    font-size: 1.25rem;
   }
 
   .cal-cell {
@@ -4438,7 +4523,7 @@ html.has-custom-cursor select * {
   *,
   *::before,
   *::after,
-  .cal::backdrop {
+  .pop::backdrop {
     animation-duration: 0.01ms !important;
     animation-delay: 0s !important;
     animation-iteration-count: 1 !important;
