@@ -50,7 +50,11 @@ export default function Cursor({ label }: { label: string }) {
       if (!target) return;
       if (target.closest(NATIVE)) setState('hidden');
       else if (target.closest('[data-cursor="view"]')) setState('view');
-      else if (target.closest(INTERACTIVE)) setState('link');
+      else if (
+        target.closest(INTERACTIVE) ||
+        target.closest('[data-cursor="link"]')
+      )
+        setState('link');
       else setState('');
     };
     const onLeaveWindow = () => {

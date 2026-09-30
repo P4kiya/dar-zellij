@@ -31,6 +31,21 @@ export function rich(text: string): ReactNode[] {
 export const plain = (text: string) =>
   text.replace(/[*^]/g, '').replace(/\n/g, ' ');
 
+/** Text made safe for markup written as a string. */
+export const esc = (text: string) =>
+  text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+
+/** The same light markup as `rich`, as an HTML string (for the menu's pages). */
+export const richHtml = (text: string) =>
+  esc(text)
+    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+    .replace(/\^([^^]+)\^/g, '<sup>$1</sup>')
+    .replace(/\n/g, '<br>');
+
 /** Fills {placeholders} in a dictionary string. */
 export const fill = (text: string, values: Record<string, string | number>) =>
   text.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ''));

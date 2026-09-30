@@ -1,8 +1,5 @@
-import { Fragment, type CSSProperties } from 'react';
-import { Clock } from 'lucide-react';
-import { MagneticButton } from '@/components/motion/magnetic-button';
+import type { CSSProperties } from 'react';
 import { Parallax } from '@/components/motion/parallax';
-import { OpenStatus } from '@/components/open-status';
 import { Rich } from '@/components/rich';
 import type { Dictionary } from '@/content';
 import { PHOTO_ALT } from '@/content/photos';
@@ -12,16 +9,13 @@ import { photo, placeholderStyle } from '@/lib/photos';
 /** Delay of one element in the hero's CSS intro (see .hero-in in globals.css). */
 const at = (seconds: number) => ({ '--d': `${seconds}s` }) as CSSProperties;
 
-/** "Dar *Zellij*" → the words, each flagged if it is set in italics. */
-const words = (title: string) =>
-  title.split(' ').map((word) => ({
-    text: word.replace(/\*/g, ''),
-    em: word.startsWith('*'),
-  }));
-
 /**
- * The first screen. Its intro is pure CSS (it plays from the first paint, after the preloader
- * when there is one), so the most important view never waits for JavaScript.
+ * The first screen: the patio, the restaurant's own lettering and the line from the title page of
+ * its menu. Nothing else, so the photograph does the talking; booking is in the header (and in the
+ * bar at the bottom on phones), hours are further down.
+ *
+ * Its intro is pure CSS (it plays from the first paint, after the preloader when there is one), so
+ * the most important view never waits for JavaScript.
  */
 export function Hero({ t, lang }: { t: Dictionary; lang: Locale }) {
   const wide = photo('courtyard');
@@ -57,55 +51,28 @@ export function Hero({ t, lang }: { t: Dictionary; lang: Locale }) {
       </Parallax>
 
       <div className="hero-content container-dz">
-        <p className="eyebrow hero-eyebrow hero-in" style={at(0)}>
-          {t.hero.eyebrow}
-        </p>
         <h1 id="hero-title" className="hero-title">
-          {/* The space goes between the word boxes: inside one, at the end of its line, it would
-              collapse. */}
-          {words(t.hero.title).map((word, i) => (
-            <Fragment key={word.text}>
-              {i > 0 && ' '}
-              <span className="hero-word">
-                <span style={at(0.08 + i * 0.1)}>
-                  {word.em ? <em>{word.text}</em> : word.text}
-                </span>
-              </span>
-            </Fragment>
-          ))}
+          {/* The lettering as an image file rather than the inline symbol, so that the browser
+              counts it as the largest contentful paint (an inline SVG is never a candidate; the
+              metric fell on a button label). No decoding="sync": on an SVG it held the paint
+              back a second. Its reveal is .hero-mark in globals.css. */}
+          <span className="hero-mark hero-in" style={at(0.1)}>
+            <img
+              className="hero-wordmark"
+              src="/wordmark.svg"
+              width={900}
+              height={144}
+              alt={t.hero.title}
+              fetchPriority="high"
+            />
+          </span>
         </h1>
-        <div className="hero-foot">
-          <p className="hero-note hero-in" style={at(0.55)}>
-            <Rich text={t.hero.note} />
-          </p>
-          <div className="hero-actions hero-in" style={at(0.7)}>
-            <MagneticButton href="#book" variant="light">
-              {t.hero.book}
-            </MagneticButton>
-            <MagneticButton href="#menu" variant="ghost" icon={false}>
-              {t.hero.menu}
-            </MagneticButton>
-          </div>
-        </div>
+        <p className="hero-tagline hero-in" style={at(0.55)}>
+          <Rich text={t.hero.tagline} />
+        </p>
       </div>
 
-      <div className="hero-bar container-dz">
-        <span className="hero-hours hero-in" style={at(0.9)}>
-          <Clock size={14} strokeWidth={1.5} aria-hidden="true" />
-          {t.hero.hours}
-        </span>
-        <span className="hero-status hero-in" style={at(1)}>
-          <OpenStatus t={t.status} />
-        </span>
-        <span
-          className="scroll-cue hero-in"
-          style={at(1.05)}
-          aria-hidden="true"
-        >
-          <span className="scroll-cue__line" />
-          {t.hero.scroll}
-        </span>
-      </div>
+      <span className="hero-cue hero-in" style={at(1)} aria-hidden="true" />
     </section>
   );
 }

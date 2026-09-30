@@ -1,6 +1,6 @@
 import type { Dictionary } from '@/content';
 import type { Locale } from '@/lib/i18n';
-import { CONTACT, MENU_PDFS } from '@/lib/site';
+import { CONTACT } from '@/lib/site';
 
 /** The deployed address (set NEXT_PUBLIC_SITE_URL for the real domain; Vercel provides its own). */
 export const SITE_URL =
@@ -44,7 +44,7 @@ export function restaurantJsonLd(t: Dictionary, lang: Locale) {
         closes: '23:59',
       },
     ],
-    hasMenu: `${SITE_URL}${MENU_PDFS.food}`,
+    hasMenu: `${SITE_URL}/${lang}#menu`,
     award: 'La Liste 2016',
     sameAs: [CONTACT.instagramUrl],
   };

@@ -38,14 +38,10 @@ export const fr = {
     brunch: 'Brunch dès 11h, sur demande',
   },
   preloader: { est: 'Est. 1999', city: 'Marrakech' },
+  // The line under the name is the one on the title page of the restaurant's menu.
   hero: {
-    eyebrow: 'Restaurant · Médina de Marrakech',
-    title: 'Dar *Zellij*',
-    note: 'Un riad du XVII^e^ siècle aux plafonds peints d’une rare beauté.',
-    hours: 'Tous les jours sauf le mardi · 12h – minuit',
-    book: 'Réserver une table',
-    menu: 'Voir la carte',
-    scroll: 'Défiler',
+    title: 'Dar Zellij',
+    tagline: 'Restaurant marocain dans un riad du XVII^e^ siècle',
   },
   intro: {
     kicker: 'Depuis 1999',
@@ -118,37 +114,47 @@ export const fr = {
   menu: {
     kicker: 'Laissez-vous tenter !',
     title: 'La *carte*',
-    intro:
-      'Pastillas, tagines, couscous et plats signature : toute la splendeur de la gastronomie marocaine, à la carte ou en menu.',
     signature: {
       label: 'Plats signature',
       text: 'Plats conviviaux marocains, dont le trid et le méchoui : d’anciennes recettes transmises de génération en génération, reflet de l’histoire et du patrimoine culinaire de notre pays.',
       forTwo: 'Pour deux personnes',
     },
-    tabs: {
+    chapters: {
       starters: 'Entrées',
       mains: 'Plats',
       desserts: 'Desserts',
       menus: 'Menus',
-      drinks: 'Cocktails',
+      cocktails: 'Cocktails',
+      wines: 'Vins',
+      drinks: 'Boissons',
     },
-    tabsLabel: 'Sections de la carte',
     courses: { starter: 'Entrée', main: 'Plat', dessert: 'Dessert' },
     perPerson: 'par personne',
     or: 'ou',
+    continued: 'suite',
     drinks: {
+      title: 'La carte des boissons',
       signature: 'Cocktails signature',
       classics: 'Cocktails classiques',
       mocktails: 'Mocktails & smoothies',
-      wine: 'Vins marocains, champagnes et digestifs : voir la carte des boissons.',
+      wines: 'Nos vins marocains',
+      hot: 'Les boissons chaudes',
     },
     tagineNote:
       'Tous nos tagines sont accompagnés de semoule ou de légumes de saison.',
     currency: 'Prix en dirhams marocains (MAD).',
-    downloads: {
-      food: 'Carte complète',
-      drinks: 'Carte des boissons',
-      pdf: 'PDF',
+    // The book itself (sections/menu-book.tsx).
+    book: {
+      label: 'La carte de Dar Zellij',
+      chaptersLabel: 'Chapitres de la carte',
+      open: 'Ouvrir la carte',
+      close: 'Refermer la carte',
+      prev: 'Page précédente',
+      next: 'Page suivante',
+      hint: 'Faites glisser les pages pour les tourner.',
+      cover: 'Couverture',
+      backCover: 'Dos de la carte',
+      status: '{pages} · {n} sur {total}',
     },
   },
   rooftop: {

@@ -21,12 +21,6 @@ export const GROUP = {
   },
 };
 
-/** The owner's PDFs, copied from the current site. */
-export const MENU_PDFS = {
-  food: '/menus/dar-zellij-carte.pdf',
-  drinks: '/menus/dar-zellij-boissons.pdf',
-};
-
 /** Weekdays as in Date#getDay: 0 = Sunday. */
 export const HOURS = {
   opens: 12,

@@ -1,5 +1,6 @@
 // Favicon (SVG + 32px ICO) and Apple touch icon from the restaurant's rosette (the path traced in
-// src/components/brand.tsx), cream on the menu's wine red.
+// src/components/brand.tsx), cream on the menu's wine red; and the DAR ZELLIJ lettering as an SVG
+// file for the hero (an <img> there, so the browser counts it as the largest contentful paint).
 import fs from 'node:fs/promises';
 import sharp from 'sharp';
 
@@ -10,6 +11,8 @@ const brand = await fs.readFile('src/components/brand.tsx', 'utf8');
 // Prettier (singleQuote) turns the path's double quotes into single ones and may wrap the line.
 const rosette = brand.match(/const ROSETTE =\s*(["'])([^"']+)\1/)?.[2];
 if (!rosette) throw new Error('Rosette path not found in brand.tsx');
+const wordmark = brand.match(/const WORDMARK =\s*(["'])([^"']+)\1/)?.[2];
+if (!wordmark) throw new Error('Wordmark path not found in brand.tsx');
 
 // The rosette's 400-unit square, centred on a rounded tile with some breathing room.
 const icon = (size, radius, pad) => {
@@ -22,6 +25,11 @@ await fs.writeFile('public/icon.svg', icon(64, 14, 7));
 await sharp(Buffer.from(icon(180, 0, 26)))
   .png()
   .toFile('public/apple-touch-icon.png');
+
+await fs.writeFile(
+  'public/wordmark.svg',
+  `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="144" viewBox="0 0 900 144"><path d="${wordmark}" fill="${CREAM}" fill-rule="evenodd"/></svg>`,
+);
 
 // An .ico is a small header and directory entry followed by PNG data.
 const png = await sharp(Buffer.from(icon(32, 7, 3)))
@@ -43,5 +51,5 @@ await fs.writeFile('public/favicon.ico', Buffer.concat([header, png]));
 
 await fs.writeFile('public/robots.txt', 'User-agent: *\nDisallow: /\n');
 console.log(
-  'public/icon.svg, public/favicon.ico, public/apple-touch-icon.png, public/robots.txt',
+  'public/icon.svg, public/favicon.ico, public/apple-touch-icon.png, public/wordmark.svg, public/robots.txt',
 );

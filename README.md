@@ -8,25 +8,25 @@ It is a static site with no backend. The booking form only runs in the browser: 
 
 ## What's on the page
 
-In order: the patio at night (hero, with the restaurant's live open/closed status in Marrakech time) · the owner's statement and the La Liste 2016 recognition · **the riad**, room by room (pinned and scrolled sideways on desktop) · **the ritual**, the owner's own sentence about the tea, the musicians and the dishes, one beat per photo · **the menu**: signature dishes, à la carte, the three set menus and the cocktails, with prices, plus the PDFs · **the rooftop** · **the week** (Tuesday closed, belly dancer on Thursdays and Sundays, Sunday brunch, today highlighted) · gallery with a full-screen viewer · **booking** form and practical details · the two sister restaurants · closing call to action · footer ending in a zellij dado that catches the light like candlelight.
+In order: the patio at night, with the restaurant's own lettering and the line from the title page of its menu · the owner's statement and the La Liste 2016 recognition · **the riad**, room by room (pinned and scrolled sideways on desktop) · **the ritual**, the owner's own sentence about the tea, the musicians and the dishes, one beat per photo · **the menu**, as the object it is: the wine-red menu lies closed, opens, and its pages turn (click, drag, the arrows, the arrow keys or a chapter): starters, mains, the signature dishes, desserts, the three set menus, the cocktails and the whole drinks list, with prices · **the rooftop** · **the week** (Tuesday closed, belly dancer on Thursdays and Sundays, Sunday brunch, today highlighted) · gallery with a full-screen viewer · **booking** form and practical details · the two sister restaurants · closing call to action · footer ending in a zellij dado that catches the light like candlelight.
 
-Everything uses the restaurant's own material: its photos, its menu (September 2024 PDFs), its wording from the current page, and its identity from the menu cover (wine #873F3F, cream #FFFEF7, the 16-petal zellij rosette and the DAR ZELLIJ lettering, traced to SVG).
+Everything uses the restaurant's own material: its photos, its menu (the September 2024 food and drinks menus, page for page), its wording from the current page, and its identity from the menu itself (wine #873F3F, cream #FFFEF7, the 16-petal zellij rosette, the DAR ZELLIJ lettering and the ornaments of its pages, traced to SVG).
 
 Overview boards: [docs/overview-desktop.jpg](docs/overview-desktop.jpg), [docs/overview-mobile.jpg](docs/overview-mobile.jpg). A design critique of the current page is in [docs/design-critique.md](docs/design-critique.md), and the accessibility audit in [docs/accessibility-review.md](docs/accessibility-review.md).
 
 ### Current page vs this proposal
 
-Lighthouse 12, same settings for both (29 September 2026; the proposal served locally over HTTP/1.1, so a Vercel deployment should do a little better):
+Lighthouse 12, same settings for both (30 September 2026; the proposal served locally over HTTP/1.1, so a Vercel deployment should do a little better):
 
 |                | Current page (mobile / desktop) | Proposal (mobile / desktop)                                     |
 | -------------- | ------------------------------- | --------------------------------------------------------------- |
-| Performance    | 23 / 52                         | 69 / 94                                                         |
+| Performance    | 23 / 52                         | 56–64 / 94                                                      |
 | Accessibility  | 84 / 84                         | 100 / 100                                                       |
 | Best practices | 68 / 74                         | 100 / 100                                                       |
 | SEO            | 85 / 85                         | 100 once noindex is removed (69 while the demo blocks indexing) |
-| Layout shift   | 0.20 / 0.11                     | 0.009 / 0.001                                                   |
+| Layout shift   | 0.20 / 0.11                     | 0 / 0                                                           |
 
-axe-core: 0 accessibility violations in French and English. In a real browser with a 4× slower CPU, the largest paint comes at about 0.8 s (2 s on a first visit, with the preloader); Lighthouse's simulated mobile LCP is more pessimistic (it counts all JavaScript before the first paint).
+axe-core: 0 accessibility violations in French and English. The mobile performance score moves between runs (the menu book adds about 90 KB of page and a little work on load); it is held down by Lighthouse's simulated largest paint (6.8 s), which chains the first paint behind the page's own payload scripts. In a real browser with a 4× slower CPU the largest paint, the name in the hero, comes at 0.7 s (2.1 s on a first visit, behind the preloader's curtains).
 
 ## Tech stack
 
@@ -70,7 +70,6 @@ Then open http://localhost:3000 (it redirects to `/fr` or `/en` from the browser
 ```
 public/
   images/        photos (WebP masters + 400/800/1200/1600 px copies)
-  menus/         the owner's PDFs (food menu, drinks menu)
   og.jpg, icon.svg, favicon.ico, apple-touch-icon.png, robots.txt
 scripts/         import-photos.mjs, build-images.mjs, build-icons.mjs
 src/
@@ -79,7 +78,7 @@ src/
   proxy.ts       / → /fr or /en from Accept-Language
   content/       fr.ts, en.ts (all copy), menu.ts (dishes and prices), photos.ts (alt text)
   sections/      one file per page section (+ its interactive part: riad-rooms, ritual-scroller,
-                 menu-tabs, week-grid, gallery-grid, booking-form, curtain-reveal)
+                 menu-book, week-grid, gallery-grid, booking-form, curtain-reveal)
   components/    nav, footer, zellij dado, preloader, booking dock, cursor, open status, brand marks,
                  photo helpers; motion/ (RevealText, RevealImage, Parallax, MagneticButton)
   hooks/         useMotion (GSAP + media queries), useBackgroundMorph, useMediaQuery, useMinuteClock
@@ -98,11 +97,21 @@ After adding or replacing a photo, run `npm run images`, and **give a replaced p
 
 Higher-resolution originals from the photographer would make the full-screen photos (hero, rooftop, closing) sharper on large screens; the best available today are 1920 px (patio) and 1642 px (2023 shoot).
 
+## The menu book
+
+The menu is shown as the book it is rather than as PDF downloads. `src/sections/menu-pages.ts` lays out its 28 pages from the data in `src/content/menu.ts` (cover, endpaper, title page, 23 pages of food and drinks, endpaper, back cover with the address and a booking link), as HTML strings so that a slow phone has nothing to hydrate; `src/sections/menu.tsx` renders them and `src/sections/menu-book.tsx` turns them.
+
+- Everything inside the book is measured in hundredths of a page's width, so a page is the same at every screen size, like a printed page seen from nearer or farther, and what fits on a page at one size fits at all of them. A page holds about six dishes with descriptions, or a dozen lines of a wine list; the fullest page today is at 93% of its height in English. After changing dishes or prices, open the book and check the page still ends above the rule at its foot (on a phone too).
+- From 860 px wide the book lies open on two pages; below that, one page at a time. The endpapers only exist on two pages.
+- Pages turn on a click or tap, by dragging (the page follows the finger), with the arrows under the book, with the ←/→ keys (Home and End close it on either side) and with the chapter buttons, which riffle through the pages in between.
+- With reduced motion, the pages change without turning. Without JavaScript, or when printing, every page is laid out in a column.
+
 ## Motion
 
 - Everything moves the same way: slow and soft (`power3.out` / `expo`), animating transform, opacity and clip-path. Shared settings live in `src/lib/motion.ts`.
-- First visit of a session: the screen is the cover of the menu (wine red, "Est. 1999", the rosette, "Marrakech"); the rosette turns a sixteenth and the screen parts like the patio's red curtains.
+- First visit of a session: the screen is the cover of the menu (wine red, "Est. 1999", the rosette, "Marrakech"); the rosette turns a sixteenth and the screen parts like the patio's red curtains. Behind them the hero's lettering rises.
 - Headings slide up line by line, photos wipe in and drift inside their frames, the light sections' background blends as you scroll, the nav rosette turns with the page.
+- The menu: the closed book leans (its thickness shows, and on desktop it leans toward the pointer), its cover lifts once as an invitation, and each page turns about the spine in perspective, with the shade it casts on its neighbours. Open and still, the pages lie perfectly flat so their text is as sharp as any other.
 - Desktop: the riad section pins and scrolls sideways; the ritual lights the owner's sentence clause by clause; custom cursor; magnetic buttons.
 - The footer ends in a zellij dado (the eight-pointed star and cross); where the pointer passes, the tiles show their glaze like candlelight. On phones the light drifts on its own.
 - With **prefers-reduced-motion**: no preloader, smooth scrolling, pinning, parallax, cursor or drifting light; content simply fades in.
@@ -120,5 +129,5 @@ Higher-resolution originals from the photographer would make the full-screen pho
   - hours (every day except Tuesday, 12:00 to midnight), Sunday brunch from 11:00 on request, belly dancer on Thursdays and Sundays;
   - "Est. 1999" (from the menu cover), La Liste 2016, the Instagram handle @darzellij (from the menu), the address and phone;
   - the fax number was left out on purpose, and the current page's "près de 20 ans" (now dated) became "De toutes les maisons que Marrakech Riads a restaurées…".
-- [ ] **New Year's Eve**: the 2026 menu (2,200 MAD) has passed; add the next one as a notice or a menu tab when it is ready.
+- [ ] **New Year's Eve**: the 2026 menu (2,200 MAD) has passed; add the next one as a notice or a page of the menu book when it is ready.
 - [ ] **German and Spanish**: the current site also has DE and ES pages; add `de.ts` / `es.ts` dictionaries and the menu translations if wanted (`LOCALES` in `src/lib/i18n.ts`).

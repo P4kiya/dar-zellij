@@ -1,6 +1,7 @@
-// The menu, from the owner's PDFs (September 2024 food and drinks menus on marrakech-riads.com).
-// Where the French and English PDFs describe a dish differently, each language keeps its own
-// wording. Obvious typos are fixed ("Patilla", "septes", "accompagner"). Prices in MAD.
+// The menu, from the owner's PDFs (September 2024 food and drinks menus on marrakech-riads.com):
+// every dish, set menu and drink, with its price in MAD. Where the French and English PDFs describe
+// a dish differently, each language keeps its own wording. Obvious typos are fixed ("Patilla",
+// "septes", "accompagner", "Lemoncelo", "Perle noir").
 import type { Localized } from '@/lib/i18n';
 
 export type Dish = {
@@ -569,3 +570,314 @@ export const MOCKTAILS: Drink[] = [
     price: 120,
   },
 ];
+
+// The rest of the drinks menu: simple lists of a name and a price. Names of wines and brands are
+// the same in both languages.
+
+/** One line of a list: a name, sometimes a second line, one price or a price per size. */
+export type ListLine = {
+  name: Localized;
+  detail?: Localized;
+  price?: number;
+  sizes?: { label: Localized; price: number }[];
+};
+
+export type ListGroup = {
+  id: string;
+  title: Localized;
+  /** Printed in brackets under the title on the menu. */
+  note?: Localized;
+  /** One price for every line of the group. */
+  price?: number;
+  /** Brands printed one after the other with their prices, as on the menu (vodka, whiskey…). */
+  inline?: boolean;
+  lines: ListLine[];
+};
+
+const HALF: Localized = { fr: 'Demi-bouteille', en: 'Half bottle' };
+const BOTTLE: Localized = { fr: 'Bouteille', en: 'Bottle' };
+const GLASS: Localized = { fr: 'Verre', en: 'Glass' };
+
+const line = (name: string, price: number): ListLine => ({
+  name: same(name),
+  price,
+});
+const medaillon = (name: string): ListLine => ({
+  name: same(name),
+  sizes: [
+    { label: HALF, price: 250 },
+    { label: BOTTLE, price: 380 },
+  ],
+});
+
+export const WINES: ListGroup[] = [
+  {
+    id: 'red',
+    title: { fr: 'Vins rouges', en: 'Red wines' },
+    lines: [
+      line('Château Roslane – Coteaux de l’Atlas', 750),
+      line('Éclipse – Les Deux Domaines', 450),
+      line('Terres Rouges – La Ferme Rouge', 430),
+      line('Ithaque', 600),
+      line('S de Siroua – Thalvin', 420),
+      medaillon('Médaillon – Domaine des Ouled Thaleb'),
+      line('La Perle Noire de Mogad’Or – Domaine du Val d’Argan', 350),
+      line('Cabernet Président', 210),
+    ],
+  },
+  {
+    id: 'rose',
+    title: { fr: 'Vins rosés', en: 'Rosé wines' },
+    lines: [
+      line('Éclipse – Les Deux Domaines', 450),
+      medaillon('Médaillon rosé – Domaine des Ouled Thaleb'),
+      line('S de Siroua – Domaine des Ouled Thaleb', 420),
+      line('La Ferme rosé', 430),
+      line('La Cuvée du Terroir rosé', 250),
+      line('La Perle de Mogad’Or – Domaine du Val d’Argan', 350),
+      line('Cabernet Président', 210),
+    ],
+  },
+  {
+    id: 'gris',
+    title: { fr: 'Vins gris', en: 'Gris wines' },
+    note: same('Clos Hermitages – Domaine des 3 Cavaliers'),
+    lines: [
+      line('Éclipse – Les Deux Domaines', 450),
+      line('Le Gris – La Ferme Gris', 430),
+      line('Domaine Sahari', 380),
+      line('La Perle Grise de Mogad’Or – Domaine du Val d’Argan', 350),
+      line('La Cuvée du Terroir', 250),
+    ],
+  },
+  {
+    id: 'white',
+    title: { fr: 'Vins blancs', en: 'White wines' },
+    lines: [
+      line('Château Roslane – Coteaux de l’Atlas', 750),
+      line('Éclipse – Les Deux Domaines', 450),
+      line('Terres Blanches – La Ferme Blanche', 430),
+      line('S de Siroua – Domaine des Ouled Thaleb', 420),
+      medaillon('Médaillon – Domaine des Ouled Thaleb'),
+      line('El Mogad’Or – Domaine du Val d’Argan', 350),
+      line('La Cuvée du Terroir blanc', 250),
+      line('Cabernet Président', 210),
+    ],
+  },
+  {
+    id: 'sparkling',
+    title: { fr: 'Vins mousseux, prosecco', en: 'Sparkling wine, prosecco' },
+    lines: [
+      { name: BOTTLE, price: 600 },
+      { name: GLASS, price: 130 },
+    ],
+  },
+];
+
+export const CHAMPAGNES: ListGroup = {
+  id: 'champagne',
+  title: same('Champagne'),
+  lines: [
+    line('Laurent-Perrier, baby bottle', 440),
+    line('Laurent-Perrier brut', 1900),
+    line('Laurent-Perrier rosé', 3000),
+    line('Veuve Clicquot brut', 2100),
+    line('Veuve Clicquot rosé', 3200),
+    line('Ruinart brut', 2400),
+    line('Ruinart rosé', 3600),
+  ],
+};
+
+export const DIGESTIFS: ListGroup = {
+  id: 'digestifs',
+  title: same('Digestifs'),
+  price: 140,
+  inline: true,
+  lines: [
+    'Armagnac',
+    'Amaretto Disaronno',
+    'Baileys',
+    'Courvoisier VSOP',
+    'Get 27',
+    'Sambuca',
+    'Malibu',
+    'Eau-de-vie',
+    'Limoncello',
+  ].map((name) => ({ name: same(name) })),
+};
+
+export const APERITIFS: ListGroup = {
+  id: 'aperitifs',
+  title: { fr: 'Apéritifs', en: 'Aperitifs' },
+  lines: [
+    line('Kir cassis', 80),
+    line('Campari', 120),
+    line('Ricard', 120),
+    { name: { fr: 'Porto rouge', en: 'Red port' }, price: 120 },
+    { name: { fr: 'Porto blanc', en: 'White port' }, price: 120 },
+    line('Martini Bianco', 120),
+    line('Martini Rosso', 120),
+    line('Martini Extra Dry', 120),
+    {
+      name: { fr: 'Verre de vin Éclipse', en: 'Glass of Éclipse wine' },
+      detail: {
+        fr: 'Blanc, rosé, gris ou rouge',
+        en: 'White, rosé, gris or red',
+      },
+      price: 110,
+    },
+  ],
+};
+
+export const SPIRITS: ListGroup[] = [
+  {
+    id: 'vodka',
+    title: same('Vodka'),
+    inline: true,
+    lines: [
+      line('Grey Goose', 150),
+      line('Belvedere', 180),
+      line('Absolut Elyx', 120),
+    ],
+  },
+  {
+    id: 'gin',
+    title: same('Gin & tonic'),
+    inline: true,
+    lines: [
+      line('Hendrick’s', 140),
+      line('Bombay Sapphire', 130),
+      line('Tanqueray', 120),
+      line('Monkey 47', 240),
+    ],
+  },
+  {
+    id: 'whiskey',
+    title: same('Whiskey'),
+    inline: true,
+    lines: [
+      line('Johnnie Walker Red', 150),
+      line('Johnnie Walker Black', 170),
+      line('Glenfiddich', 150),
+      line('Jack Daniel’s', 160),
+      { name: { fr: 'Chivas 12 ans', en: 'Chivas 12 years' }, price: 170 },
+      line('Glenmorangie', 160),
+      line('J&B', 130),
+      { name: { fr: 'Chivas 18 ans', en: 'Chivas 18 years' }, price: 310 },
+      line('Jameson', 140),
+    ],
+  },
+  {
+    id: 'rum',
+    title: { fr: 'Rhum', en: 'Rum' },
+    inline: true,
+    lines: [
+      line('Malibu', 110),
+      line('Bacardi', 120),
+      line('Cachaça', 110),
+      { name: { fr: 'Havana 7 ans', en: 'Havana 7 years' }, price: 120 },
+    ],
+  },
+  {
+    id: 'tequila',
+    title: same('Tequila'),
+    inline: true,
+    lines: [line('Patrón Silver', 180), line('Camino', 110)],
+  },
+];
+
+export const BEERS: ListGroup = {
+  id: 'beers',
+  title: { fr: 'Bières', en: 'Beers' },
+  lines: [
+    line('Corona', 90),
+    line('Casablanca', 80),
+    line('Heineken', 65),
+    line('Flag Spéciale', 60),
+    line('San Miguel', 90),
+    { name: { fr: 'Bière sans alcool', en: 'Alcohol-free beer' }, price: 55 },
+  ],
+};
+
+export const SOFTS: ListGroup = {
+  id: 'softs',
+  title: same('Soft drinks'),
+  lines: [
+    {
+      name: {
+        fr: 'Eau plate ou gazeuse, 75 cl',
+        en: 'Still or sparkling water, 75 cl',
+      },
+      price: 45,
+    },
+    {
+      name: {
+        fr: 'Eau plate ou gazeuse, 50 cl',
+        en: 'Still or sparkling water, 50 cl',
+      },
+      price: 30,
+    },
+    line('Coca-Cola', 45),
+    line('Coca-Cola Zero', 45),
+    line('Sprite', 45),
+    line('Orangina', 45),
+    {
+      name: {
+        fr: 'Schweppes citron ou tonic',
+        en: 'Schweppes lemon or tonic',
+      },
+      price: 45,
+    },
+    line('Red Bull', 80),
+  ],
+};
+
+export const JUICES: ListGroup = {
+  id: 'juices',
+  title: { fr: 'Jus de fruits frais', en: 'Fresh fruit juices' },
+  lines: [
+    line('Orange', 55),
+    { name: { fr: 'Citronnade', en: 'Lemonade' }, price: 65 },
+    { name: { fr: 'Carotte', en: 'Carrot' }, price: 50 },
+    {
+      name: { fr: 'Betterave à la cannelle', en: 'Cinnamon beetroot' },
+      price: 75,
+    },
+  ],
+};
+
+export const COFFEES: ListGroup = {
+  id: 'coffees',
+  title: { fr: 'Cafés', en: 'Coffees' },
+  lines: [
+    {
+      name: { fr: 'Café marocain épicé', en: 'Moroccan spiced coffee' },
+      price: 60,
+    },
+    line('Espresso', 50),
+    line('Double espresso', 65),
+    line('Americano', 55),
+    line('Latte', 55),
+    line('Cappuccino', 55),
+    { name: { fr: 'Nos-nos', en: 'Nos-nos, half and half' }, price: 55 },
+  ],
+};
+
+export const TEAS: ListGroup = {
+  id: 'teas',
+  title: { fr: 'Thés et infusions', en: 'Teas and infusions' },
+  lines: [
+    { name: { fr: 'Thé à la menthe', en: 'Moroccan mint tea' }, price: 35 },
+    { name: { fr: 'Thé aux herbes', en: 'Herbal tea' }, price: 35 },
+    { name: { fr: 'Verveine', en: 'Verbena' }, price: 50 },
+    {
+      name: { fr: 'Camomille et zaatar', en: 'Chamomile and zaatar' },
+      price: 60,
+    },
+    {
+      name: { fr: 'Thé à la rose de Damas', en: 'Damask rose tea' },
+      price: 60,
+    },
+    { name: { fr: 'Thé noir', en: 'Black tea' }, price: 40 },
+  ],
+};

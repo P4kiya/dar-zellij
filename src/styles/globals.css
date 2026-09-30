@@ -390,6 +390,12 @@ a:focus-visible .link-text {
   height: 15px;
   width: auto;
   aspect-ratio: 900 / 144;
+  transition: opacity 0.45s ease;
+}
+
+/* On the first screen the hero carries the name; the bar shows it once that has scrolled away. */
+.nav-shell:not(.is-scrolled, .is-open) .wordmark-mark {
+  opacity: 0;
 }
 
 .nav-links {
@@ -648,49 +654,31 @@ html.is-preloading .preloader {
   inset: 0;
   z-index: -1;
   background:
-    linear-gradient(180deg, rgba(26, 19, 17, 0.55) 0%, rgba(26, 19, 17, 0) 22%),
+    linear-gradient(180deg, rgba(26, 19, 17, 0.5) 0%, rgba(26, 19, 17, 0) 20%),
     linear-gradient(
       0deg,
       rgba(26, 19, 17, 0.9) 0%,
-      rgba(26, 19, 17, 0.55) 34%,
-      rgba(26, 19, 17, 0) 62%
-    ),
-    linear-gradient(90deg, rgba(26, 19, 17, 0.35) 0%, rgba(26, 19, 17, 0) 55%);
+      rgba(26, 19, 17, 0.56) 26%,
+      rgba(26, 19, 17, 0) 56%
+    );
 }
 
+/* The name and one line, centred under the alcove: the photograph is the hero. */
 .hero-content {
-  padding: 8rem 0 clamp(2rem, 5vh, 3.5rem);
-}
-
-.hero-eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  margin-bottom: 1.2rem;
-  color: var(--brass-light);
-}
-
-.hero-eyebrow::before {
-  content: '';
-  width: 2.6rem;
-  height: 1px;
-  background: currentColor;
+  display: grid;
+  justify-items: center;
+  padding: 8rem 0 clamp(5.5rem, 14vh, 8.75rem);
+  text-align: center;
 }
 
 .hero-title {
-  margin: 0 0 0 -0.05em;
-  font: 300 clamp(4.8rem, 15vw, 14.5rem) / 0.8 var(--serif);
-  letter-spacing: -0.035em;
-}
-
-.hero-title em {
-  font-weight: 300;
-  color: var(--brass-light);
+  width: clamp(15rem, 34vw, 31rem);
+  margin: 0;
 }
 
 /* The hero's intro (hero.tsx): CSS only, from the first paint, so the first screen never waits for
-   JavaScript. With the preloader it starts as the curtains part. Each element sets its delay (--d);
-   the title's words rise from behind a mask, the rest fades up. */
+   JavaScript. With the preloader it starts as the curtains part. Each element sets its delay (--d)
+   and fades up. */
 :root {
   --intro: 0.1s;
 }
@@ -699,29 +687,37 @@ html.has-preloader {
   --intro: 1.55s;
 }
 
-.hero-word {
-  display: inline-block;
-  overflow: hidden;
-  padding: 0.22em 0.1em 0.32em;
-  margin: -0.22em -0.1em -0.32em;
-  vertical-align: top;
+/* The lettering is painted in the very first frame (from almost nothing, then fading up) and does
+   not wait for the preloader's curtains (--intro): it is painted behind them, so the curtains
+   part on the name. This is what makes it the largest contentful paint, at the first paint: an
+   image first painted at opacity 0, clipped away by a mask, or painted a frame later (after the
+   scripts have run) is counted late or not at all, and the metric fell on a button label. */
+.hero-mark {
+  display: block;
 }
 
-.hero-word > span {
-  display: inline-block;
-  animation: hero-rise 1.5s cubic-bezier(0.16, 1, 0.3, 1)
-    calc(var(--intro) + var(--d, 0s)) both;
+.hero-mark.hero-in {
+  animation-name: hero-mark-in;
+  animation-delay: 0s;
+}
+
+@keyframes hero-mark-in {
+  from {
+    opacity: 0.02;
+    transform: translateY(22px);
+  }
+}
+
+.hero-wordmark {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 900 / 144;
 }
 
 .hero-in {
   animation: hero-in 1.2s var(--ease-soft) calc(var(--intro) + var(--d, 0s))
     both;
-}
-
-@keyframes hero-rise {
-  from {
-    transform: translateY(112%);
-  }
 }
 
 @keyframes hero-in {
@@ -731,81 +727,43 @@ html.has-preloader {
   }
 }
 
-.hero-foot {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 2rem 3rem;
-  margin-top: clamp(1.5rem, 3vh, 2.5rem);
-}
-
-.hero-note {
-  max-width: 32ch;
-  margin: 0;
-  font: 400 clamp(1.25rem, 1.7vw, 1.55rem) / 1.35 var(--serif);
-  font-style: italic;
-  opacity: 0.94;
-}
-
-.hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.hero-bar {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 1rem 2rem;
-  padding: 1.15rem 0 1.5rem;
-  border-top: 1px solid rgba(255, 254, 247, 0.22);
-  font: 400 0.64rem/1.4 var(--caps);
-  letter-spacing: 0.2em;
+/* padding-left balances the tracking after each line's last letter, so the line sits on centre. */
+.hero-tagline {
+  max-width: 34rem;
+  margin: clamp(1.15rem, 2.4vh, 1.7rem) 0 0;
+  padding-left: 0.34em;
+  font: 400 0.7rem/1.75 var(--caps);
+  letter-spacing: 0.34em;
   text-transform: uppercase;
+  text-wrap: balance;
+  opacity: 0.92;
 }
 
-.hero-hours {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  opacity: 0.9;
-}
-
-.hero-status {
-  justify-self: center;
-}
-
-.scroll-cue {
-  justify-self: end;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  opacity: 0.85;
-}
-
-.scroll-cue__line {
-  position: relative;
-  width: 3rem;
-  height: 1px;
+/* A thread at the foot of the screen with a light running down it: "there is more below". */
+.hero-cue {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 1px;
+  height: clamp(2.75rem, 7.5vh, 4.5rem);
   overflow: hidden;
-  background: rgba(255, 254, 247, 0.3);
+  background: rgba(255, 254, 247, 0.26);
 }
 
-.scroll-cue__line::after {
+.hero-cue::after {
   content: '';
   position: absolute;
   inset: 0;
   background: var(--cream);
-  animation: cue 2.4s var(--ease-inout) infinite;
+  animation: cue 2.6s var(--ease-inout) infinite;
 }
 
 @keyframes cue {
   from {
-    transform: translateX(-100%);
+    transform: translateY(-100%);
   }
   to {
-    transform: translateX(100%);
+    transform: translateY(100%);
   }
 }
 
@@ -1286,8 +1244,21 @@ html.has-preloader {
 }
 
 /* ------------------------------------------------------------------------------------------------
-   La carte
+   La carte: the menu as a book. sections/menu.tsx lays out the pages, menu-book.tsx turns them.
+
+   The book is sized from one length, --page-w. Everything in it is measured in --u (1% of a page's
+   width), so a page is the same at every size, like a printed page seen from nearer or farther,
+   and what fits on a page at one size fits at all of them.
+
+   A page lies on the right of the spine and turns about it by --a degrees (0 to 180). On two pages
+   (from 860px) every other page is the back of the one before it: the same turn, seen from behind.
    ------------------------------------------------------------------------------------------------ */
+
+@property --a {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
 
 .menu {
   background: var(--ivory);
@@ -1299,397 +1270,1034 @@ html.has-preloader {
 
 .menu-head {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.62fr);
-  align-items: end;
-  gap: 2rem 4rem;
-  margin-bottom: clamp(3rem, 6vw, 5rem);
+  justify-items: center;
+  margin-bottom: clamp(1.75rem, 3.5vw, 3rem);
+  text-align: center;
 }
 
-.menu-head .lede {
-  margin: 0;
-}
-
-.menu-downloads {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.9rem 1.8rem;
-  margin-top: 1.6rem;
-}
-
-.menu-downloads a {
-  display: inline-flex;
+.menu-head .section-title.is-split {
   align-items: center;
-  gap: 0.55rem;
-  padding: 0.55rem 0;
-  color: var(--wine);
-  font: 400 0.66rem/1 var(--caps);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
 }
 
-.menu-downloads small {
-  font-size: 0.56rem;
-  opacity: 0.7;
-}
-
-/* Signature dishes: a wine panel like the menu's own cover. */
-.signatures {
+.menu-book {
+  --fit: min(calc(100vw - 1.5rem), 27rem);
+  --page-w: var(--fit);
+  --u: calc(var(--page-w) / 100);
+  /* How far the covers' boards stand out from the paper, and how thick the closed book is. */
+  --over: calc(var(--u) * 1.4);
+  --thick: calc(var(--u) * 5.5);
+  --paper: #fffef7;
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: clamp(2rem, 6vw, 6rem);
-  margin-bottom: clamp(3.5rem, 7vw, 6rem);
-  padding: clamp(2rem, 5vw, 4.25rem);
-  background: var(--wine);
-  color: var(--cream);
+  justify-items: center;
+  gap: clamp(1rem, 2vw, 1.6rem);
+  -webkit-user-select: none;
+  user-select: none;
 }
 
-.signatures__mark {
-  width: 46px;
-  height: 46px;
-  color: var(--brass-light);
-}
-
-.signatures__intro .eyebrow {
-  margin: 1.4rem 0 1rem;
-  color: var(--brass-light);
-}
-
-.signatures__intro p {
-  max-width: 32ch;
-  margin: 0;
-  font: 300 clamp(1.35rem, 1.9vw, 1.65rem) / 1.35 var(--serif);
-  font-style: italic;
-  opacity: 0.94;
-}
-
-.signatures__list {
-  display: grid;
-  gap: 2rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.signature {
-  padding-bottom: 2rem;
-  border-bottom: 1px solid rgba(255, 254, 247, 0.22);
-}
-
-.signature:last-child {
-  padding-bottom: 0;
-  border-bottom: 0;
-}
-
-.signature__head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1.5rem;
-}
-
-.signature h4 {
-  margin: 0;
-  font: 400 clamp(1.8rem, 2.7vw, 2.6rem) / 1.05 var(--serif);
-}
-
-.signature .price {
-  color: var(--brass-light);
-  font-size: clamp(1.7rem, 2.4vw, 2.2rem);
-}
-
-.signature__tag {
-  display: inline-block;
-  margin-top: 0.8rem;
-  padding: 0.4rem 0.65rem;
-  border: 1px solid rgba(255, 254, 247, 0.4);
-  font: 400 0.58rem/1 var(--caps);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-
-.signature p {
-  max-width: 48ch;
-  margin: 0.85rem 0 0;
-  font-size: 0.94rem;
-  opacity: 0.86;
-}
-
-/* Tabs (menu-tabs.tsx). */
-.menu-tabs__bar {
-  border-bottom: 1px solid var(--line);
+/* The chapters and the controls come from the client component, the book itself from the
+   server, so the three are ordered here rather than in the markup. */
+.menu-book__chapters {
+  order: 1;
+  position: relative;
+  max-width: 100%;
   overflow-x: auto;
   scrollbar-width: none;
 }
 
-.menu-tabs__bar::-webkit-scrollbar {
+.menu-book__chapters::-webkit-scrollbar {
   display: none;
 }
 
-.tablist {
-  position: relative;
+.menu-book__chapters ul {
   display: flex;
-  gap: clamp(1.4rem, 3.2vw, 3rem);
+  gap: clamp(1.1rem, 2.6vw, 2.5rem);
   width: max-content;
-}
-
-.tablist [role='tab'] {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.55rem;
-  padding: 1.1rem 0 1.2rem;
-  border: 0;
-  background: none;
-  color: var(--ink-soft);
-  font: 400 clamp(1.5rem, 2.3vw, 2.15rem) / 1 var(--serif);
-  transition: color 0.4s ease;
-}
-
-.tablist [role='tab']:hover,
-.tablist [role='tab'][aria-selected='true'] {
-  color: var(--ink);
-}
-
-.tablist [role='tab']:focus-visible {
-  outline-offset: -2px;
-}
-
-.tab-index {
-  color: var(--wine);
-  font: 400 0.58rem/1 var(--caps);
-  letter-spacing: 0.18em;
-}
-
-/* 1px wide, scaled to the active tab's width (menu-tabs.tsx). */
-.tablist__indicator {
-  position: absolute;
-  left: 0;
-  bottom: -1px;
-  width: 1px;
-  height: 2px;
-  background: var(--wine);
-  transform-origin: left center;
-  transition: transform 0.65s var(--ease-soft);
-}
-
-.menu-tabs__body {
-  display: grid;
-  grid-template-columns: minmax(200px, 0.5fr) minmax(0, 1.5fr);
-  gap: clamp(2rem, 5vw, 5rem);
-  padding-top: clamp(2rem, 4vw, 3.5rem);
-}
-
-.menu-tabs__photos {
-  position: sticky;
-  top: 96px;
-  align-self: start;
-  aspect-ratio: 9 / 14;
-}
-
-.menu-tabs__photo {
-  position: absolute;
-  inset: 0;
   margin: 0;
-  overflow: hidden;
-  opacity: 0;
-  background: var(--ph-color) var(--ph-blur) center / cover no-repeat;
-  transition: opacity 0.8s var(--ease-soft);
-}
-
-.menu-tabs__photo.is-active {
-  opacity: 1;
-}
-
-.menu-tabs__photo img {
-  width: 100%;
-  height: 100%;
-  max-width: none;
-  object-fit: cover;
-  transform: scale(1.06);
-  transition: transform 1.6s var(--ease-soft);
-}
-
-.menu-tabs__photo.is-active img {
-  transform: scale(1);
-}
-
-.menu-panel:focus-visible {
-  outline-offset: 8px;
-}
-
-.dish-list {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 clamp(2rem, 4vw, 4rem);
-  margin: 0;
-  padding: 0;
+  padding: 0 var(--gutter);
   list-style: none;
 }
 
-.dish {
-  padding: 1.1rem 0 1.25rem;
-  border-bottom: 1px solid var(--line);
-}
-
-.dish-head {
-  display: flex;
-  align-items: baseline;
-  gap: 0.75rem;
-}
-
-.dish-name {
-  font: 500 1.38rem/1.2 var(--serif);
-}
-
-.dish-leader {
-  flex: 1;
-  min-width: 1.5rem;
-  border-bottom: 1px dotted var(--line-strong);
-  transform: translateY(-0.3em);
-}
-
-.dish .price,
-.drink-group__title .price {
-  color: var(--wine);
-  font-size: 1.32rem;
-}
-
-.dish-desc {
-  max-width: 46ch;
-  margin: 0.35rem 0 0;
+.menu-book__chapters button {
+  position: relative;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
   color: var(--ink-soft);
-  font-size: 0.89rem;
-  line-height: 1.55;
+  font: 400 0.66rem/1 var(--caps);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  transition: color 0.35s ease;
 }
 
-.dish-note {
-  margin: 0.45rem 0 0;
+.menu-book__chapters button::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0.22em;
+  bottom: 0.55rem;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.5s var(--ease-soft);
+}
+
+.menu-book__chapters button:hover,
+.menu-book__chapters button[aria-current] {
   color: var(--wine);
-  font: 400 0.6rem/1.4 var(--caps);
+}
+
+.menu-book__chapters button[aria-current]::after {
+  transform: scaleX(1);
+}
+
+/* A whole number of pixels wide, so an open page's text falls on the pixel grid. */
+@supports (width: round(down, 1.5px, 1px)) {
+  .menu-book {
+    --page-w: round(down, var(--fit), 1px);
+  }
+}
+
+/* The stage gives the depth; the body is the book, leaning as a whole (menu-book.tsx sets how). */
+.menu-book__stage {
+  order: 2;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  padding: calc(var(--u) * 5) 0 calc(var(--u) * 8);
+  perspective: 2600px;
+}
+
+.menu-book__body {
+  --shift: 0;
+  --rx: 9;
+  --ry: -13;
+  --rz: 1;
+  --zoom: 0.88;
+  --tx: 0;
+  --ty: 0;
+  position: relative;
+  width: var(--page-w);
+  aspect-ratio: 0.62;
+  transform-style: preserve-3d;
+  transform: translate3d(calc(var(--shift) * 1%), 0, 0)
+    rotateX(calc((var(--rx) + var(--tx)) * 1deg))
+    rotateY(calc((var(--ry) + var(--ty)) * 1deg))
+    rotateZ(calc(var(--rz) * 1deg)) scale(var(--zoom));
+}
+
+/* The shadow on the table, under each half of the book. */
+.menu-book__ground {
+  position: absolute;
+  inset: calc(var(--over) * -1) calc(var(--over) * -1) calc(var(--over) * -1) 0;
+  transform: translateZ(calc(var(--thick) * -1));
+  box-shadow:
+    0 calc(var(--u) * 1.2) calc(var(--u) * 2.4) rgba(58, 24, 20, 0.3),
+    0 calc(var(--u) * 5) calc(var(--u) * 11) rgba(58, 24, 20, 0.34);
+  opacity: var(--on-right, 1);
+}
+
+.menu-book__ground--left {
+  display: none;
+}
+
+/* Open, the book lies on its shadow (see "is-resting" below). */
+.menu-book[data-side='open'] .menu-book__ground {
+  transform: none;
+}
+
+/* The book's thickness: the edges of the pages between the two boards, seen along the fore edge
+   and along the foot when the book leans. */
+.menu-book__edge {
+  position: absolute;
+  opacity: var(--on-right, 1);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.menu-book__edge--fore {
+  top: calc(var(--over) * -1);
+  bottom: calc(var(--over) * -1);
+  left: calc(100% + var(--over));
+  width: var(--thick);
+  transform-origin: 0 50%;
+  transform: rotateY(90deg);
+  background:
+    linear-gradient(to right, #6f3232 0 7%, transparent 7% 93%, #5d2a2a 93%),
+    repeating-linear-gradient(to right, #f4eddd 0 1px, #d9cdb6 1px 2px);
+}
+
+.menu-book__edge--foot {
+  left: 0;
+  right: calc(var(--over) * -1);
+  top: calc(100% + var(--over));
+  height: var(--thick);
+  transform-origin: 50% 0;
+  transform: rotateX(-90deg);
+  background:
+    linear-gradient(to bottom, #6f3232 0 7%, transparent 7% 93%, #5d2a2a 93%),
+    repeating-linear-gradient(to bottom, #ece4d2 0 1px, #cfc2a9 1px 2px);
+}
+
+.menu-book__edge--fore-left,
+.menu-book__edge--foot-left {
+  display: none;
+}
+
+/* The pages are flattened into this plane and stacked by z-index, each turning in its own depth. */
+.menu-book__leaves {
+  position: absolute;
+  inset: 0;
+  perspective: 2200px;
+  perspective-origin: 0 50%;
+  /* A sideways drag turns a page; scrolling and pinch-zoom stay with the browser. */
+  touch-action: pan-y pinch-zoom;
+  cursor: pointer;
+}
+
+.menu-book__leaves.is-dragging {
+  cursor: grabbing;
+}
+
+/* One page at a time, there are no endpapers: the back board is drawn behind the paper. */
+.menu-book__leaves::before {
+  content: '';
+  position: absolute;
+  inset: calc(var(--over) * -1) calc(var(--over) * -1) calc(var(--over) * -1) 0;
+  border-radius: 0 calc(var(--u) * 0.9) calc(var(--u) * 0.9) 0;
+  background: var(--wine);
+}
+
+.bk-page {
+  position: absolute;
+  inset: 0;
+  z-index: calc(var(--n) - var(--i));
+  display: none;
+  color: var(--wine);
+  font-family: var(--sans);
+  font-size: calc(var(--u) * 3.55);
+  line-height: 1.42;
+  transform-origin: 0 50%;
+  transform: rotateY(calc(var(--a) * -1deg));
+  /* One page at a time: a turned page has nowhere to lie, so it fades as it comes edge-on. */
+  opacity: clamp(0, calc((96 - var(--a)) / 26), 1);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.bk-page.is-live {
+  display: block;
+}
+
+/* The shade a page takes as it turns, and casts on the page it leaves or lands on: deepest at
+   the spine. menu-book.tsx sets its opacity. */
+.bk-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(36, 12, 10, 0.32),
+    rgba(36, 12, 10, 0.1) 40%,
+    rgba(36, 12, 10, 0.02)
+  );
+  opacity: 0;
+  pointer-events: none;
+}
+
+.bk-page[data-tone='paper'] {
+  --dir: 1;
+  --sheets: var(--right, 0);
+  --step: calc(var(--u) * 0.26 * var(--dir));
+  --drop: calc(var(--u) * 0.16);
+  background:
+    linear-gradient(
+      to right,
+      rgba(74, 29, 31, 0.15),
+      rgba(74, 29, 31, 0.035) 5%,
+      rgba(74, 29, 31, 0) 12%
+    ),
+    var(--paper);
+  /* The sheets under this one, showing at the fore edge and the foot (up to five). */
+  box-shadow:
+    calc(var(--step) * min(1, var(--sheets)))
+      calc(var(--drop) * min(1, var(--sheets))) 0 0 #f2ebdb,
+    calc(var(--step) * min(2, var(--sheets)))
+      calc(var(--drop) * min(2, var(--sheets))) 0 0 #ddd1ba,
+    calc(var(--step) * min(3, var(--sheets)))
+      calc(var(--drop) * min(3, var(--sheets))) 0 0 #f2ebdb,
+    calc(var(--step) * min(4, var(--sheets)))
+      calc(var(--drop) * min(4, var(--sheets))) 0 0 #ddd1ba,
+    calc(var(--step) * min(5, var(--sheets)))
+      calc(var(--drop) * min(5, var(--sheets))) 0 0 #f2ebdb;
+}
+
+.bk-page.is-turning {
+  box-shadow: none;
+}
+
+/* The covers: boards a little larger than the paper, in the menu's wine-red cloth. The board is
+   drawn behind the page's content and stands out on the three outer sides. */
+.bk-page[data-tone='wine'] {
+  color: var(--cream);
+}
+
+.bk-page[data-tone='wine']::before {
+  content: '';
+  position: absolute;
+  inset: calc(var(--over) * -1) calc(var(--over) * -1) calc(var(--over) * -1) 0;
+  z-index: -1;
+  border-radius: 0 calc(var(--u) * 0.9) calc(var(--u) * 0.9) 0;
+  background:
+    /* the hinge, a finger's width from the spine */
+    linear-gradient(
+      to right,
+      rgba(30, 8, 8, 0.3),
+      rgba(30, 8, 8, 0) 1.6%,
+      rgba(30, 8, 8, 0) 4.4%,
+      rgba(30, 8, 8, 0.2) 5.2%,
+      rgba(255, 244, 236, 0.07) 6%,
+      rgba(255, 244, 236, 0) 7.4%
+    ),
+    /* light from the top left */
+    radial-gradient(
+        130% 90% at 22% 12%,
+        rgba(255, 236, 226, 0.13),
+        rgba(255, 236, 226, 0) 58%
+      ),
+    /* the weave of the cloth */
+    repeating-linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 0.028) 0 1px,
+        rgba(0, 0, 0, 0) 1px 3px
+      ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.04) 0 1px,
+      rgba(0, 0, 0, 0) 1px 3px
+    ),
+    var(--wine);
+  box-shadow: inset 0 0 0 1px rgba(255, 244, 236, 0.05);
+}
+
+/* Inside the covers: endpapers printed with the zellij star, tone on tone. */
+.bk-page--endpaper[data-tone='wine']::before {
+  background:
+    linear-gradient(to right, rgba(30, 8, 8, 0.36), rgba(30, 8, 8, 0) 10%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='none' stroke='%23fffef7'%3E%3Cpath d='M72 36L61.5 46.5L61.5 61.5L46.5 61.5L36 72L25.5 61.5L10.5 61.5L10.5 46.5L0 36L10.5 25.5L10.5 10.5L25.5 10.5L36 0L46.5 10.5L61.5 10.5L61.5 25.5Z' stroke-opacity='.13'/%3E%3Cpath d='M50.6 42.1L44.6 44.6L42.1 50.6L36 48.1L29.9 50.6L27.4 44.6L21.4 42.1L23.9 36L21.4 29.9L27.4 27.4L29.9 21.4L36 23.9L42.1 21.4L44.6 27.4L50.6 29.9L48.1 36Z' stroke-opacity='.09'/%3E%3C/g%3E%3C/svg%3E")
+      50% 50% / calc(var(--u) * 12.5) auto,
+    var(--wine);
+}
+
+/* Two pages side by side. */
+@media (min-width: 860px) {
+  .menu-book {
+    --fit: min(
+      clamp(23.75rem, calc((100svh - 14rem) * 0.62), 29.5rem),
+      calc((100vw - 2 * var(--gutter) - 1.5rem) / 2)
+    );
+  }
+
+  .menu-book__body {
+    --shift: -25;
+    --rx: 15;
+    --ry: -19;
+    --rz: 1.5;
+    --zoom: 0.94;
+    width: calc(var(--page-w) * 2);
+    aspect-ratio: 1.24;
+  }
+
+  .menu-book__leaves {
+    perspective-origin: 50% 50%;
+  }
+
+  .menu-book__leaves::before {
+    content: none;
+  }
+
+  .menu-book__ground {
+    left: 50%;
+  }
+
+  .menu-book__ground--left {
+    display: block;
+    left: calc(var(--over) * -1);
+    right: 50%;
+  }
+
+  .menu-book__edge--foot {
+    left: 50%;
+  }
+
+  .menu-book__edge--fore-left {
+    display: block;
+    left: auto;
+    right: calc(100% + var(--over));
+    transform-origin: 100% 50%;
+    transform: rotateY(-90deg);
+  }
+
+  .menu-book__edge--foot-left {
+    display: block;
+    left: calc(var(--over) * -1);
+    right: 50%;
+  }
+
+  /* A half's shadow and edges show only while pages lie on it: --on-left and --on-right (0 to 1)
+     follow the leaves as they land and lift (menu-book.tsx). An empty shadow would read as a
+     blank sheet. */
+  .menu-book__ground--left,
+  .menu-book__edge--fore-left,
+  .menu-book__edge--foot-left {
+    opacity: var(--on-left, 0);
+  }
+
+  .bk-page {
+    left: 50%;
+    opacity: 1;
+  }
+
+  /* The back of the page before it: turned over, so that it faces up once the leaf has turned. */
+  .bk-page:nth-child(even) {
+    z-index: var(--i);
+    transform: rotateY(calc(var(--a) * -1deg)) translateX(100%) rotateY(180deg);
+  }
+
+  .bk-page:nth-child(even) .bk-shade {
+    background: linear-gradient(
+      to left,
+      rgba(36, 12, 10, 0.32),
+      rgba(36, 12, 10, 0.1) 40%,
+      rgba(36, 12, 10, 0.02)
+    );
+  }
+
+  .bk-page[data-tone='paper']:nth-child(even) {
+    --dir: -1;
+    --sheets: var(--left, 0);
+    background:
+      linear-gradient(
+        to left,
+        rgba(74, 29, 31, 0.15),
+        rgba(74, 29, 31, 0.035) 5%,
+        rgba(74, 29, 31, 0) 12%
+      ),
+      var(--paper);
+  }
+
+  /* Mirrored, so the hinge and the rounded corners fall on the right sides. */
+  .bk-page[data-tone='wine']:nth-child(even)::before {
+    inset: calc(var(--over) * -1) 0 calc(var(--over) * -1)
+      calc(var(--over) * -1);
+    transform: scaleX(-1);
+  }
+}
+
+/* At rest, open, nothing is in 3D: the pages are ordinary boxes side by side, so their text is as
+   sharp as any other text on the page (and the browser keeps far fewer layers). A turn, a drag or
+   closing the book brings the depth back; the two states look exactly the same. */
+.menu-book.is-resting .menu-book__body {
+  transform: none;
+  transform-style: flat;
+}
+
+.menu-book.is-resting .menu-book__leaves {
+  perspective: none;
+}
+
+.menu-book.is-resting .bk-page {
+  transform: none;
+}
+
+@media (min-width: 860px) {
+  .menu-book.is-resting .bk-page:nth-child(even) {
+    transform: translateX(-100%);
+  }
+}
+
+/* A paper page, as the menu prints them: "Est. 1999", the flower, "Marrakech"; a rule at the foot. */
+.bk-sheet {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: calc(var(--u) * 8) calc(var(--u) * 9.5) calc(var(--u) * 7.5);
+}
+
+.bk-head {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  font: 400 calc(var(--u) * 2.5) / 1 var(--caps);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.bk-head > :last-child {
+  text-align: right;
+}
+
+.bk-head__flower {
+  width: calc(var(--u) * 8);
+  height: auto;
+  aspect-ratio: 1;
+}
+
+.bk-body {
+  flex: 1;
+  min-height: 0;
+  padding-top: calc(var(--u) * 5);
+}
+
+/* A line with a diamond at each end and the band of zellij shapes in the middle. */
+.bk-foot {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: calc(var(--u) * 1.5);
+  background: linear-gradient(currentColor, currentColor) 50% 50% / 100%
+    max(1px, calc(var(--u) * 0.26)) no-repeat;
+}
+
+.bk-foot::before,
+.bk-foot::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: calc(var(--u) * 0.85);
+  aspect-ratio: 1;
+  background: currentColor;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.bk-foot::before {
+  left: 0;
+}
+
+.bk-foot::after {
+  left: 100%;
+}
+
+.bk-foot__band {
+  position: relative;
+  height: 100%;
+  width: auto;
+  aspect-ratio: 720 / 48;
+  background: var(--paper);
+}
+
+.bk-title {
+  margin: 0 0 calc(var(--u) * 4.6);
+  text-align: center;
+}
+
+.bk-title h3 {
+  margin: 0;
+  font: 400 calc(var(--u) * 5.2) / 1.14 var(--caps);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.bk-title small {
+  font-size: 0.5em;
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+}
+
+.bk-title__price {
+  margin: calc(var(--u) * 1.3) 0 0;
+  font: 400 calc(var(--u) * 2.6) / 1 var(--caps);
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
-.panel-note {
-  margin: 1.6rem 0 0;
-  color: var(--ink-soft);
-  font: 400 1.1rem/1.4 var(--serif);
-  font-style: italic;
+.bk-title__price .price {
+  font-size: calc(var(--u) * 4.6);
+  font-weight: 600;
+  letter-spacing: 0;
 }
 
-.panel-note a {
-  color: var(--wine);
-  text-decoration: underline;
-  text-underline-offset: 0.25em;
-  text-decoration-thickness: 1px;
-}
-
-.set-menus {
+.bk-dishes {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.1rem;
-}
-
-.set-menu {
-  padding: 1.75rem 1.5rem 1.5rem;
-  border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--cream) 60%, transparent);
-}
-
-.set-menu__head h3 {
-  margin: 0;
-  font: 400 1.75rem/1.1 var(--serif);
-}
-
-.set-menu__price {
-  display: flex;
-  align-items: baseline;
-  gap: 0.55rem;
-  margin: 0.45rem 0 1.3rem;
-}
-
-.set-menu__price .price {
-  color: var(--wine);
-  font-size: 2.4rem;
-  line-height: 1;
-}
-
-.set-menu__price .price::after {
-  content: ' MAD';
-  font-size: 0.9rem;
-}
-
-.set-menu__per {
-  color: var(--ink-soft);
-  font: 400 0.58rem/1 var(--caps);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
-.set-menu__course {
-  padding: 1rem 0 0.9rem;
-  border-top: 1px solid var(--line);
-}
-
-.set-menu__course h4 {
-  margin: 0 0 0.6rem;
-  color: var(--wine);
-  font: 400 0.6rem/1 var(--caps);
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-}
-
-.set-menu__course ul {
+  gap: calc(var(--u) * 3.5);
   margin: 0;
   padding: 0;
   list-style: none;
-  font-size: 0.9rem;
-  line-height: 1.45;
 }
 
-/* "or" between the options (the word comes from the dictionary via --or). */
-.set-menu__course li + li::before {
-  content: var(--or);
-  display: block;
-  margin: 0.15rem 0;
-  color: var(--ink-soft);
-  font: 400 0.95rem/1.3 var(--serif);
-  font-style: italic;
-}
-
-.set-menu__intro,
-.set-menu__after {
-  margin: 0 0 0.45rem;
-  color: var(--ink-soft);
-  font: 400 1rem/1.35 var(--serif);
-  font-style: italic;
-}
-
-.set-menu__after {
-  margin: 0.6rem 0 0;
-}
-
-.drinks {
-  display: grid;
-  gap: 2.6rem;
-}
-
-.drink-group__title {
+.bk-dish__head {
   display: flex;
   align-items: baseline;
-  gap: 0.75rem;
-  margin: 0 0 0.3rem;
-  color: var(--wine);
-  font: 400 0.68rem/1 var(--caps);
-  letter-spacing: 0.22em;
+  gap: calc(var(--u) * 1.4);
+}
+
+.bk-dish__name {
+  font: 600 calc(var(--u) * 4.6) / 1.16 var(--serif);
+}
+
+.bk-leader {
+  flex: 1;
+  min-width: calc(var(--u) * 3);
+  border-bottom: 1px dotted color-mix(in srgb, currentColor 48%, transparent);
+  transform: translateY(-0.28em);
+}
+
+.bk-page .price {
+  font-weight: 600;
+}
+
+.bk-dish .price {
+  font-size: calc(var(--u) * 4.6);
+}
+
+.bk-dish__desc {
+  max-width: 90%;
+  margin: calc(var(--u) * 0.7) 0 0;
+}
+
+.bk-dish__note {
+  margin: calc(var(--u) * 1.1) 0 0;
+  font: 400 calc(var(--u) * 2.45) / 1.3 var(--caps);
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
-.menu-currency {
-  margin: 2.2rem 0 0;
-  color: var(--ink-soft);
-  font: 400 0.6rem/1.4 var(--caps);
+.bk-dish__head + .bk-dish__note {
+  margin-top: calc(var(--u) * 0.6);
+}
+
+.bk-lede,
+.bk-note {
+  margin: 0 0 calc(var(--u) * 5.4);
+  font: italic 500 calc(var(--u) * 3.9) / 1.34 var(--serif);
+  text-align: center;
+  text-wrap: pretty;
+}
+
+.bk-note {
+  margin: calc(var(--u) * 5.4) 0 0;
+  text-wrap: balance;
+}
+
+/* Smaller headings: the courses of a set menu, the groups of the drinks menu. */
+.bk-subtitle {
+  margin: 0 0 calc(var(--u) * 2.3);
+  font: 400 calc(var(--u) * 3.3) / 1.2 var(--caps);
+  letter-spacing: 0.16em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.bk-subtitle .price {
+  margin-left: 0.5em;
+  font-family: var(--serif);
+  font-size: 1.24em;
+  letter-spacing: 0;
+}
+
+.bk-set {
+  text-align: center;
+}
+
+.bk-set .bk-title {
+  margin-bottom: calc(var(--u) * 4);
+}
+
+.bk-set__course + .bk-set__course {
+  margin-top: calc(var(--u) * 3.5);
+}
+
+.bk-set .bk-subtitle {
+  margin-bottom: calc(var(--u) * 1.2);
+}
+
+.bk-set ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font: 500 calc(var(--u) * 3.95) / 1.28 var(--serif);
+}
+
+.bk-set li {
+  text-wrap: balance;
+}
+
+/* "or" before each further choice (the word comes from the dictionary via --or). */
+.bk-set li + li::before {
+  content: var(--or) ' ';
+  font-style: italic;
+  font-weight: 400;
+}
+
+.bk-set__aside {
+  margin: 0;
+  font: italic 400 calc(var(--u) * 3.8) / 1.28 var(--serif);
+}
+
+.bk-group + .bk-group {
+  margin-top: calc(var(--u) * 5);
+}
+
+.bk-group__note {
+  margin: calc(var(--u) * -1.2) 0 calc(var(--u) * 2.2);
+  font-size: calc(var(--u) * 2.75);
+  text-align: center;
+}
+
+.bk-lines {
+  display: grid;
+  gap: calc(var(--u) * 1.45);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bk-line {
+  display: flex;
+  align-items: baseline;
+  gap: calc(var(--u) * 1.4);
+  font: 500 calc(var(--u) * 4.1) / 1.2 var(--serif);
+}
+
+.bk-line__name small {
+  display: block;
+  margin-top: calc(var(--u) * 0.3);
+  font: 400 calc(var(--u) * 3.1) / 1.3 var(--sans);
+}
+
+.bk-inline {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font: 500 calc(var(--u) * 4.1) / 1.4 var(--serif);
+  text-align: center;
+  text-wrap: balance;
+}
+
+.bk-inline li {
+  display: inline;
+}
+
+/* Each with its price: two columns of brands. */
+.bk-inline--each {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(var(--u) * 1.3) calc(var(--u) * 5);
+  font-size: calc(var(--u) * 3.7);
+  line-height: 1.2;
+  text-align: left;
+}
+
+.bk-inline--each li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: calc(var(--u) * 1.4);
+}
+
+/* The first right-hand page, and the opening of the drinks menu. */
+.bk-titlepage {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: calc(var(--u) * 2.6);
+  padding: calc(var(--u) * 10);
+  text-align: center;
+}
+
+.bk-titlepage__line {
+  font: 400 calc(var(--u) * 2.5) / 1.6 var(--caps);
   letter-spacing: 0.2em;
   text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.bk-titlepage__mark {
+  width: calc(var(--u) * 46);
+  height: auto;
+  aspect-ratio: 900 / 144;
+}
+
+.bk-titlepage__flower {
+  width: calc(var(--u) * 13);
+  height: auto;
+  aspect-ratio: 1;
+}
+
+.bk-titlepage__title {
+  margin: 0;
+  font: 400 calc(var(--u) * 4.2) / 1.25 var(--caps);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* "Prices in Moroccan dirhams", as at the foot of the printed drinks menu. */
+.bk-titlepage__note {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--u) * 9);
+  margin: 0;
+  font: italic 400 calc(var(--u) * 3.2) / 1.3 var(--serif);
+  text-align: center;
+}
+
+/* The cover, as printed: "Est. 1999", the rosette, "Marrakech". */
+.bk-cover {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  justify-items: center;
+  align-items: center;
+  padding: calc(var(--u) * 11.5) 0 calc(var(--u) * 13.5);
+}
+
+.bk-cover__line {
+  padding-left: 0.2em;
+  font: 400 calc(var(--u) * 2.6) / 1 var(--caps);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.bk-cover__rosette {
+  width: calc(var(--u) * 23);
+  height: auto;
+  aspect-ratio: 1;
+}
+
+/* The back, as printed: a sprig in each corner, the address at the foot. */
+.bk-back {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: calc(var(--u) * 6);
+  padding-bottom: calc(var(--u) * 21);
+}
+
+.bk-back__sprig {
+  position: absolute;
+  width: calc(var(--u) * 6);
+  height: auto;
+  aspect-ratio: 280 / 291;
+}
+
+.bk-back__sprig--tl {
+  top: calc(var(--u) * 10);
+  left: calc(var(--u) * 10);
+}
+
+.bk-back__sprig--tr {
+  top: calc(var(--u) * 10);
+  right: calc(var(--u) * 10);
+  transform: scaleX(-1);
+}
+
+.bk-back__sprig--bl {
+  bottom: calc(var(--u) * 10);
+  left: calc(var(--u) * 10);
+  transform: scaleY(-1);
+}
+
+.bk-back__sprig--br {
+  right: calc(var(--u) * 10);
+  bottom: calc(var(--u) * 10);
+  transform: scale(-1);
+}
+
+.bk-back__address {
+  display: grid;
+  justify-items: center;
+  font: 400 calc(var(--u) * 2.45) / 1.5 var(--caps);
+  font-style: normal;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.bk-back__address > * {
+  padding: 0.32em 0;
+}
+
+.bk-back__address a {
+  text-decoration: underline transparent;
+  text-underline-offset: 0.35em;
+  transition: text-decoration-color 0.3s ease;
+}
+
+.bk-back__address a:hover,
+.bk-back__address a:focus-visible {
+  text-decoration-color: currentColor;
+}
+
+.bk-back__book {
+  display: inline-flex;
+  align-items: center;
+  min-height: max(44px, calc(var(--u) * 11));
+  padding: 0 calc(var(--u) * 5.5);
+  border: 1px solid rgba(255, 254, 247, 0.6);
+  font: 400 calc(var(--u) * 2.5) / 1 var(--caps);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  transition:
+    background-color 0.4s var(--ease-soft),
+    color 0.4s var(--ease-soft);
+}
+
+.bk-back__book:hover,
+.bk-back__book:focus-visible {
+  background: var(--cream);
+  color: var(--wine-dark);
+}
+
+/* Under the book: the arrows, what is open, and the way back to the cover. */
+.menu-book__foot {
+  order: 3;
+  display: grid;
+  justify-items: center;
+  gap: 0.9rem;
+  width: 100%;
+}
+
+.menu-book__controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.9rem, 3vw, 2rem);
+  min-height: 52px;
+  padding: 0 var(--gutter);
+}
+
+.menu-book__arrow {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: none;
+  color: var(--ink);
+  transition:
+    background-color 0.4s var(--ease-soft),
+    border-color 0.4s var(--ease-soft),
+    color 0.4s var(--ease-soft),
+    opacity 0.4s ease;
+}
+
+.menu-book__arrow:hover:not([aria-disabled='true']),
+.menu-book__arrow:focus-visible:not([aria-disabled='true']) {
+  border-color: var(--wine);
+  background: var(--wine);
+  color: var(--cream);
+}
+
+.menu-book__arrow[aria-disabled='true'] {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* As wide as the space between the arrows allows, so the row fits a 320px screen. */
+.menu-book__status {
+  flex: 0 1 17rem;
+  display: grid;
+  gap: 0.4rem;
+  min-width: 0;
+  margin: 0;
+  text-align: center;
+}
+
+.menu-book__names {
+  display: block;
+  color: var(--ink);
+  font: 500 1.22rem/1.15 var(--serif);
+  text-wrap: balance;
+}
+
+.menu-book__count {
+  display: block;
+  color: var(--ink-soft);
+  font: 400 0.6rem/1 var(--caps);
+  letter-spacing: 0.22em;
+}
+
+.menu-book__hint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem 1.6rem;
+  margin: 0;
+  padding: 0 var(--gutter);
+  color: var(--ink-soft);
+  font: 400 0.6rem/1.5 var(--caps);
+  letter-spacing: 0.2em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.menu-book__hint button {
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--wine);
+  font: inherit;
+  letter-spacing: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-transform: inherit;
+  text-underline-offset: 0.5em;
+}
+
+/* Without JavaScript, and on paper, the pages simply follow one another. */
+@media print, (scripting: none) {
+  .menu-book__chapters,
+  .menu-book__controls,
+  .menu-book__hint,
+  .menu-book__ground,
+  .menu-book__edge,
+  .bk-page--endpaper {
+    display: none !important;
+  }
+
+  .menu-book__stage {
+    padding: 0;
+    perspective: none;
+  }
+
+  .menu-book__body {
+    width: var(--page-w);
+    aspect-ratio: auto;
+    transform: none;
+  }
+
+  .menu-book__leaves {
+    position: static;
+    display: grid;
+    gap: 1rem;
+    perspective: none;
+  }
+
+  .menu-book__leaves::before {
+    content: none;
+  }
+
+  .bk-page {
+    position: relative;
+    inset: auto;
+    left: auto;
+    display: block;
+    aspect-ratio: 0.62;
+    opacity: 1;
+    transform: none !important;
+  }
 }
 
 /* ------------------------------------------------------------------------------------------------
@@ -3067,10 +3675,6 @@ html.has-custom-cursor select * {
     grid-column: 2;
   }
 
-  .set-menus {
-    grid-template-columns: 1fr;
-  }
-
   .footer-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -3088,6 +3692,10 @@ html.has-custom-cursor select * {
   .nav-links,
   .nav-actions .lang-switch {
     display: none;
+  }
+
+  .nav-links + .nav-actions {
+    margin-left: auto;
   }
 
   .menu-toggle {
@@ -3212,31 +3820,6 @@ html.has-custom-cursor select * {
     padding-block: 0.8rem;
   }
 
-  .hero-bar {
-    grid-template-columns: 1fr auto;
-  }
-
-  .hero-status {
-    justify-self: end;
-  }
-
-  .scroll-cue {
-    display: none;
-  }
-
-  .menu-head,
-  .signatures {
-    grid-template-columns: 1fr;
-  }
-
-  .menu-tabs__body {
-    grid-template-columns: 1fr;
-  }
-
-  .menu-tabs__photos {
-    display: none;
-  }
-
   .rooftop-content {
     grid-template-columns: 1fr;
   }
@@ -3342,50 +3925,24 @@ html.has-custom-cursor select * {
     min-height: max(620px, 100svh);
   }
 
+  /* Clear of the booking bar fixed to the bottom of the screen. */
   .hero-content {
-    padding-bottom: 2rem;
+    padding-bottom: 8rem;
   }
 
-  .hero-eyebrow {
-    gap: 0.6rem;
+  .hero-title {
+    width: min(72vw, 18.5rem);
+  }
+
+  .hero-tagline {
+    max-width: 19rem;
+    padding-left: 0.26em;
     font-size: 0.6rem;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.26em;
   }
 
-  .hero-eyebrow::before {
-    width: 1.5rem;
-  }
-
-  .hero-title {
-    font-size: clamp(4.4rem, 23vw, 7.5rem);
-  }
-
-  .hero-title {
-    line-height: 0.82;
-  }
-
-  .hero-foot {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1.6rem;
-  }
-
-  .hero-actions {
-    width: 100%;
-  }
-
-  .hero-actions .btn {
-    flex: 1 1 auto;
-  }
-
-  .hero-bar {
-    grid-template-columns: 1fr;
-    gap: 0.6rem;
-    padding-bottom: 5.5rem;
-  }
-
-  .hero-status {
-    justify-self: start;
+  .hero-cue {
+    display: none;
   }
 
   .section-title {
@@ -3443,19 +4000,6 @@ html.has-custom-cursor select * {
   .room--wide .room-photo,
   .room--tall .room-photo {
     aspect-ratio: 4 / 5;
-  }
-
-  .dish-list {
-    grid-template-columns: 1fr;
-  }
-
-  .tablist [role='tab'] {
-    font-size: 1.45rem;
-  }
-
-  .menu-tabs__bar {
-    margin-inline: calc(-1 * var(--gutter));
-    padding-inline: var(--gutter);
   }
 
   /* The photo becomes a band at the top (a full-height frame would crop it to a sliver);
@@ -3572,7 +4116,7 @@ html.has-custom-cursor select * {
   .grain,
   .dado,
   .open-status__dot,
-  .scroll-cue__line::after,
+  .hero-cue::after,
   .hero-media {
     animation: none;
   }

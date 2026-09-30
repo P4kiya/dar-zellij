@@ -15,3 +15,13 @@ export function useMediaQuery(query: string) {
 }
 
 export const useReducedMotion = () => useMediaQuery(MEDIA.reduced);
+
+const never = () => () => {};
+
+/** False on the server and in the first client render, true once the page is interactive. */
+export const useHydrated = () =>
+  useSyncExternalStore(
+    never,
+    () => true,
+    () => false,
+  );
