@@ -18,6 +18,7 @@ import { marrakechDateISO } from '@/lib/hours';
 import type { Locale } from '@/lib/i18n';
 import { EASE, matches, MEDIA } from '@/lib/motion';
 import { HOURS } from '@/lib/site';
+import { DatePicker } from './date-picker';
 
 type Strings = Dictionary['book']['form'];
 type Values = {
@@ -113,13 +114,7 @@ export function BookingForm({ t, lang }: { t: Strings; lang: Locale }) {
     return next;
   };
 
-  const onChange = (
-    event: ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
-  ) => {
-    const { name, value } = event.target;
-    const field = name as Field;
+  const setField = (field: Field, value: string) => {
     setValues((current) => {
       const next = { ...current, [field]: value };
       // A brunch seating only exists on Sundays.
@@ -140,13 +135,19 @@ export function BookingForm({ t, lang }: { t: Strings; lang: Locale }) {
       setErrors((current) => ({ ...current, [field]: undefined }));
   };
 
+  const onChange = (
+    event: ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => setField(event.target.name as Field, event.target.value);
+
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const found = validate(values);
     setErrors(found);
     const first = (Object.keys(found) as Field[])[0];
     if (first) {
-      formRef.current?.querySelector<HTMLElement>(`[name="${first}"]`)?.focus();
+      formRef.current?.querySelector<HTMLElement>(`#bk-${first}`)?.focus();
       return;
     }
     // TODO before launch: send `values` to the restaurant (see README).
@@ -202,18 +203,18 @@ export function BookingForm({ t, lang }: { t: Strings; lang: Locale }) {
             <div
               className={`field field--fixed ${errors.date ? 'has-error' : ''}`}
             >
-              <input
+              <DatePicker
                 id="bk-date"
-                name="date"
-                type="date"
-                min={today || undefined}
+                label={t.date}
                 value={values.date}
-                onChange={onChange}
-                required
-                aria-invalid={!!errors.date}
-                aria-describedby={describe('date')}
+                min={today}
+                closedWeekday={HOURS.closedWeekday}
+                lang={lang}
+                t={t}
+                invalid={!!errors.date}
+                describedBy={describe('date')}
+                onChange={(value) => setField('date', value)}
               />
-              <label htmlFor="bk-date">{t.date}</label>
               {error('date')}
             </div>
             <div

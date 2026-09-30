@@ -225,6 +225,13 @@ export const fr = {
       required: 'Merci de remplir ce champ.',
       invalidEmail: 'Adresse email invalide.',
       choose: 'Choisir',
+      pickDate: 'Choisir une date',
+      prevMonth: 'Mois précédent',
+      nextMonth: 'Mois suivant',
+      today: 'Aujourd’hui',
+      closedLegend: 'Fermé le mardi',
+      closedShort: 'fermé',
+      closeCalendar: 'Fermer le calendrier',
       brunch: 'brunch',
       success:
         'Merci, {name}. Nous vous répondons à {email} pour confirmer votre table.',

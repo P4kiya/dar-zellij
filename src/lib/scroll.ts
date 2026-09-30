@@ -38,6 +38,18 @@ export const unlockScroll = () => lenis?.start();
 /** Holds the page still (while a dialog or the phone menu is open). */
 export const lockScroll = () => lenis?.stop();
 
+/** Scrolls the page on by a distance (glides with Lenis; the browser's own scrolling otherwise). */
+export function scrollPageBy(px: number) {
+  if (lenis) {
+    lenis.scrollTo(window.scrollY + px, { duration: 0.9 });
+    return;
+  }
+  window.scrollBy({
+    top: px,
+    behavior: matches(MEDIA.reduced) ? 'auto' : 'smooth',
+  });
+}
+
 /** Glides to an element (falls back to the browser when Lenis is off, e.g. reduced motion). */
 export function scrollToTarget(target: string | HTMLElement) {
   if (lenis) {

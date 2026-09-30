@@ -220,6 +220,13 @@ export const en: Dictionary = {
       required: 'Please fill in this field.',
       invalidEmail: 'Please enter a valid email address.',
       choose: 'Choose',
+      pickDate: 'Choose a date',
+      prevMonth: 'Previous month',
+      nextMonth: 'Next month',
+      today: 'Today',
+      closedLegend: 'Closed on Tuesdays',
+      closedShort: 'closed',
+      closeCalendar: 'Close the calendar',
       brunch: 'brunch',
       success:
         'Thank you, {name}. We will reply to {email} to confirm your table.',
